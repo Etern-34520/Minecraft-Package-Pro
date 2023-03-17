@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="161.0" prefWidth="140.0" type="GridPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" />
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" vgrow="NEVER" />
+    <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <image>
+            <Image url="@craftingTable.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="versionLabel" text="version" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <ProgressBar fx:id="progressBar1" prefWidth="200.0" progress="0.0" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
+      <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" GridPane.columnSpan="3" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
+      <AnchorPane fx:id="progress" onMouseEntered="#showSettings" onMouseExited="#hideSettings" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowSpan="3" GridPane.valignment="CENTER">
+         <children>
+            <Button fx:id="cancelButton" layoutX="75.0" layoutY="95.0" mnemonicParsing="false" onMouseClicked="#cancel" onMouseEntered="#showSettings" opacity="0.56" text="取消" visible="false" />
+            <Button fx:id="pauseButton" layoutX="15.0" layoutY="95.0" mnemonicParsing="false" onMouseClicked="#pause" onMouseEntered="#showSettings" opacity="0.56" text="暂停" visible="false" />
+         </children>
+      </AnchorPane>
+   </children>
+   <effect>
+      <DropShadow />
+   </effect>
+</fx:root>

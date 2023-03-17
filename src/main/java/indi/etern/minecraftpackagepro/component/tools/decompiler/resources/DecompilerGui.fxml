@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<fx:root dividerPositions="0.3528428093645485" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <items>
+      <VBox>
+         <children>
+            <TabPane fx:id="decompileModeSelectPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+               <tabs>
+                  <Tab text="自动扫描">
+                     <content>
+                        <VBox prefHeight="400.0" prefWidth="300.0">
+                           <children>
+                              <Label style="-fx-font-size: 14px;" text=".minecraft文件夹路径：">
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="10.0" />
+                                 </VBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <TextField fx:id="minecraftPathTextField" minHeight="30.0" onKeyPressed="#refreshPath" HBox.hgrow="ALWAYS" />
+                                    <Button maxWidth="78.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#selectPath" prefHeight="30.0" prefWidth="78.0" text="选择..." />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="3.0" left="10.0" right="10.0" top="2.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <Label style="-fx-font-size: 14px;" text="导出路径：">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="3.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <TextField fx:id="putPathTextField" minHeight="30.0" onKeyPressed="#refreshPath" HBox.hgrow="ALWAYS" />
+                                    <Button maxWidth="78.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#selectPutPath" prefHeight="30.0" prefWidth="78.0" text="选择..." />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="2.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Button mnemonicParsing="false" onMouseClicked="#selectAll" text="全选" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <ListView fx:id="minecraftVersionsView" disable="true" VBox.vgrow="ALWAYS">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                     </content>
+                  </Tab>
+                  <Tab text="手动选择">
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label style="-fx-font-size: 14px;" text=".minecraft文件夹路径：">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="10.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" VBox.vgrow="NEVER">
+                                 <children>
+                                    <TextField fx:id="minecraftPathTextField1" minHeight="30.0" onKeyPressed="#refreshPath" HBox.hgrow="ALWAYS" />
+                                    <Button maxWidth="78.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#selectPath" prefHeight="30.0" prefWidth="78.0" text="选择..." />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="3.0" left="10.0" right="10.0" top="2.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                              <Label style="-fx-font-size: 14px;" text="导出路径：">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="3.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <TextField fx:id="putPathTextField1" minHeight="30.0" onKeyPressed="#refreshPath" HBox.hgrow="ALWAYS" />
+                                    <Button maxWidth="78.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#selectPutPath" prefHeight="30.0" prefWidth="78.0" text="选择..." />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="3.0" left="10.0" right="10.0" top="2.0" />
+                                 </padding>
+                              </HBox>
+                              <Label style="-fx-font-size: 14px;" text="minecraft核心jar位置：">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="3.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" VBox.vgrow="NEVER">
+                                 <children>
+                                    <TextField fx:id="minecraftCorePathTextField" minHeight="30.0" HBox.hgrow="ALWAYS" />
+                                    <Button maxWidth="78.0" minWidth="70.0" mnemonicParsing="false" onMouseClicked="#selectJarPath" prefHeight="30.0" prefWidth="78.0" text="选择..." />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="3.0" left="10.0" right="10.0" top="2.0" />
+                                 </padding>
+                              </HBox>
+                              <Label style="-fx-font-size: 14px;" text="minecraft核心jar版本">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="3.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <TextField fx:id="minecraftVersionTextField" maxWidth="1.7976931348623157E308" minHeight="30.0" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="3.0" left="10.0" right="10.0" top="2.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+            <VBox VBox.vgrow="NEVER">
+               <children>
+                  <CheckBox fx:id="librariesCheck" mnemonicParsing="false" selected="true" text="反混淆libraries文件夹">
+                     <VBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <Label text="（内含较大资源文件）" textFill="#949494">
+                     <VBox.margin>
+                        <Insets left="30.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
+                  <CheckBox fx:id="jarCheck" mnemonicParsing="false" selected="true" text="提取jar中的资源文件">
+                     <VBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <Label text="（内含贴图模型等资源文件）" textFill="#949494">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </VBox>
+            <HBox alignment="CENTER_RIGHT" VBox.vgrow="NEVER">
+               <children>
+                  <Label fx:id="tips">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Button fx:id="startButton" defaultButton="true" disable="true" mnemonicParsing="false" onMouseClicked="#start" text="开始">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <ScrollPane fx:id="decompileProgressParent" hbarPolicy="NEVER">
+         <content>
+            <TilePane fx:id="decompileProgress" prefHeight="0.0" prefWidth="371.0" />
+         </content>
+      </ScrollPane>
+   </items>
+</fx:root>
