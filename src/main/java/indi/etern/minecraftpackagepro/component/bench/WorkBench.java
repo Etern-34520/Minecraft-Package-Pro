@@ -1,4 +1,4 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.bench;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WorkDesk extends GridPane {
+public class WorkBench extends GridPane {
     @FXML
     SplitPane topPane;
     @FXML
@@ -59,11 +59,10 @@ public class WorkDesk extends GridPane {
     ToggleGroup bottomRightGroup = new ToggleGroup();
 
     HashMap<Node,SplitPane> parents = new HashMap<>();
-    public WorkDesk(){
+    public WorkBench(){
         URL url;
         try {
-            url = new URL("file:"+new File("bin/controller/resource/WorkDesk.fxml").getPath());
-            FXMLLoader loader = new FXMLLoader(url);
+            FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
             loader.setRoot(this);
             loader.setController(this);
             loader.load();

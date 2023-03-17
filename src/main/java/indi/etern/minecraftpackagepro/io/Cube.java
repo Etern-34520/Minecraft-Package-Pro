@@ -1,4 +1,4 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
 import java.util.List;
 

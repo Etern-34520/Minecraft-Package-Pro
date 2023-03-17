@@ -1,4 +1,4 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.bench;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,16 +55,11 @@ public class Window extends GridPane{
 	@FXML
 	private Pane paneS;
 	private final List<Pane> panes = new ArrayList<>();
-	ToggleButton button;
-	Desktop desktop;
-	Hyperlink backLink;
-	double prefX;
-	double prefY;
 	
-	public Window(Node node,ToggleButton connectedButton) {
+	public Window(Node node, ToggleButton connectedButton) {
 		try {
 			this.connectedButton = connectedButton;
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("resource/Window.fxml"));
+			FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
 			loader.setController(this);
 			loader.setRoot(this);
 			loader.load();

@@ -1,7 +1,11 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.main;
 
-import io.FileTree;
-import io.FileTree.tsFile;
+import indi.etern.minecraftpackagepro.component.bench.EditPane;
+import indi.etern.minecraftpackagepro.component.bench.WorkBench;
+import indi.etern.minecraftpackagepro.component.edit.colorPicker.ColorPicker;
+import indi.etern.minecraftpackagepro.component.edit.colorPlate.ColorPlate;
+import indi.etern.minecraftpackagepro.io.FileTree;
+import indi.etern.minecraftpackagepro.io.FileTree.tsFile;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,28 +19,28 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkDeskTest extends Application {
+public class WorkBenchLauncher extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
         //TODO 记住大小和位置
-        WorkDesk workDesk = new WorkDesk();
-        Scene scene = new Scene(workDesk,600,400);
+        WorkBench WorkBench = new WorkBench();
+        Scene scene = new Scene(WorkBench,600,400);
         stage.setScene(scene);
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(scene);
         stage.show();
 
         ColorPicker colorPicker = new ColorPicker();
-        workDesk.add(colorPicker, WorkDesk.Way.LEFT_TOP,"RGB");
+        WorkBench.add(colorPicker, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_TOP,"RGB");
 
         ColorPlate colorPlate = new ColorPlate();
-        workDesk.add(colorPlate, WorkDesk.Way.LEFT_BOTTOM, "plate");
+        WorkBench.add(colorPlate, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_BOTTOM, "plate");
         
         colorPicker.setColorPlate(colorPlate);
         
         /*DecompilerGui decompilerGui = new DecompilerGui();
-        workDesk.add(decompilerGui, WorkDesk.Way.BOTTOM_LEFT,"资源包提取");*/
+        WorkBench.add(decompilerGui, WorkBench.Way.BOTTOM_LEFT,"资源包提取");*/
     
         FileTree fileTree = new FileTree();
         TreeItem<tsFile> root = new TreeItem<>();
@@ -51,24 +55,24 @@ public class WorkDeskTest extends Application {
         });
         ContextMenu contextMenu = new ContextMenu(refresh);
         treeView.setContextMenu(contextMenu);
-        workDesk.add(treeView, WorkDesk.Way.LEFT_TOP, "packView");
+        WorkBench.add(treeView, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_TOP, "packView");
     
         TabPane tabPane = new TabPane();
     
         treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<tsFile>>() {
             @Override
             public void changed(ObservableValue<? extends TreeItem<tsFile>> observable, TreeItem<FileTree.tsFile> oldValue, TreeItem<FileTree.tsFile> newValue) {
-                EditTab editTab = new EditTab();
+                EditPane EditPane = new EditPane();
                 if (newValue != null) {
                     tsFile picture = newValue.getValue();
-                    editTab.uploadPicture(picture);
+                    EditPane.uploadPicture(picture);
                 }
-                if (editTab.toTab()!=null) {
-                    if (contains(editTab.toTab())) {
-                        tabPane.selectionModelProperty().get().select(getInTabList(editTab.toTab()));
+                if (EditPane.toTab()!=null) {
+                    if (contains(EditPane.toTab())) {
+                        tabPane.selectionModelProperty().get().select(getInTabList(EditPane.toTab()));
                     } else {
-                        tabPane.getTabs().add(editTab.toTab());
-                        tabPane.selectionModelProperty().get().select(getInTabList(editTab.toTab()));
+                        tabPane.getTabs().add(EditPane.toTab());
+                        tabPane.selectionModelProperty().get().select(getInTabList(EditPane.toTab()));
                     }
                 }
 
@@ -95,7 +99,7 @@ public class WorkDeskTest extends Application {
             }
 
         });
-        workDesk.setCenterBasic(tabPane);
+        WorkBench.setCenterBasic(tabPane);
     }
 
     public static void main(String[] args){

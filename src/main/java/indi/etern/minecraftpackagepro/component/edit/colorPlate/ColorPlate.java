@@ -1,13 +1,14 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.edit.colorPlate;
 
-import java.io.IOException;
-
+import indi.etern.minecraftpackagepro.component.edit.colorPicker.ColorPicker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class ColorPlate extends GridPane {
 @FXML
@@ -17,7 +18,7 @@ public void setColorPicker(ColorPicker colorPicker){
 	this.colorPicker = colorPicker;
 }
 	public ColorPlate() throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("resource/ColorPlate.fxml"));
+		FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
 		loader.setController(this);
 		loader.setRoot(this);
 		loader.load();

@@ -1,10 +1,6 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Settings {
 	public static void save() {

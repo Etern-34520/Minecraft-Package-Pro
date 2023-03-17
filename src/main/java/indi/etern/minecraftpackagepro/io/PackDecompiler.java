@@ -1,4 +1,4 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
 import org.apache.commons.io.FileUtils;
 
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@SuppressWarnings("removal")
 public class PackDecompiler {
     private File minecraftJar;
     private HashMap<String, String> fileMap = new HashMap<>();

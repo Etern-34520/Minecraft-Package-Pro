@@ -1,6 +1,9 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 public class JsonUtils
 {

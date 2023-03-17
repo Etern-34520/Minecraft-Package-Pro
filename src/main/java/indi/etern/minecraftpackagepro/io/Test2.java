@@ -1,7 +1,4 @@
-package io.test;
-
-import io.Cube;
-import io.ModelReader;
+package indi.etern.minecraftpackagepro.io;
 
 import java.io.IOException;
 

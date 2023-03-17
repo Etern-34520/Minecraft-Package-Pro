@@ -1,6 +1,5 @@
-package io.test;
+package indi.etern.minecraftpackagepro.io;
 
-import io.Read;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

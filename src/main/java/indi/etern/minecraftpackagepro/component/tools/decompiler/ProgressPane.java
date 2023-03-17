@@ -1,6 +1,6 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.tools.decompiler;
 
-import io.PackDecompiler;
+import indi.etern.minecraftpackagepro.io.PackDecompiler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +14,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import jfxtras.styles.jmetro.JMetroStyleClass;
+
+import java.net.URL;
 
 public class ProgressPane extends GridPane {
     private PackDecompiler packDecompiler;
@@ -37,7 +39,7 @@ public class ProgressPane extends GridPane {
     }
     ProgressPane(PackDecompiler packDecompiler, String version) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("resource/ProgressPane.fxml"));
+            FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
             loader.setController(this);
             loader.setRoot(this);
             loader.load();

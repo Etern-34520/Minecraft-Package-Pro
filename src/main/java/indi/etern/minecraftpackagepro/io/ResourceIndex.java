@@ -1,4 +1,4 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
@@ -8,18 +8,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class ResourceIndex {
     /**
-     * from Minecraft Code Pack
-     * Thanks to Mojang
+     * from Minecraft Code Pack,
+     * Thanks to Mojang!
      */
     //private static final Logger logger = LogManager.getLogger();
     private final Map<String, String> resourceMap = Maps.newHashMap();//Changed

@@ -1,4 +1,4 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;

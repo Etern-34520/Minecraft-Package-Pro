@@ -1,5 +1,6 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.edit.colorPicker;
 
+import indi.etern.minecraftpackagepro.component.edit.colorPlate.ColorPlate;
 import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class ColorPicker extends GridPane{
 	private Polygon colorShow1;
 	*/
 	public ColorPicker() throws Exception{//构造函数
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("resource/ColorPicker.fxml"));
+		FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
 		loader.setController(this);
 		loader.setRoot(this);
 		loader.load();
@@ -264,7 +266,7 @@ public class ColorPicker extends GridPane{
 
 	@FXML
 	public void dotSet(MouseEvent e) {
-		colorTop.setCursor(javafx.scene.Cursor.NONE);
+		colorTop.setCursor(Cursor.NONE);
 		double ex = e.getX();// 鼠标X位置
 		double ey = e.getY();// 鼠标Y位置
 		double a = colorTop.getWidth();

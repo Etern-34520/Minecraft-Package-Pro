@@ -2,6 +2,7 @@
   <configuration default="false" name="Main" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher" />
     <module name="MinecraftPackagePro" />
+    <option name="VM_PARAMETERS" value="-Xms256M -Xmx1024M -XX:ReservedCodeCacheSize=512M" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

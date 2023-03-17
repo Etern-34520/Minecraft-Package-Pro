@@ -1,4 +1,4 @@
-package io.test;
+package indi.etern.minecraftpackagepro.io;
 
 import java.awt.*;
 import java.awt.event.InputEvent;

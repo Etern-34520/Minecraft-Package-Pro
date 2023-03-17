@@ -1,4 +1,4 @@
-package io;
+package indi.etern.minecraftpackagepro.io;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

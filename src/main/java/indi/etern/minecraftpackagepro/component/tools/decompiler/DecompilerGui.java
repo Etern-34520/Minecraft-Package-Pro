@@ -1,6 +1,6 @@
-package controller;
+package indi.etern.minecraftpackagepro.component.tools.decompiler;
 
-import io.PackDecompiler;
+import indi.etern.minecraftpackagepro.io.PackDecompiler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -54,7 +55,7 @@ public class DecompilerGui extends SplitPane {
     
     public DecompilerGui() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("resource/DecompilerGui.fxml"));
+            FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
             loader.setController(this);
             loader.setRoot(this);
             loader.load();

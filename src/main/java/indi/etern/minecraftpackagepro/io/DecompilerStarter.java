@@ -1,6 +1,6 @@
-package io.test;
+package indi.etern.minecraftpackagepro.io;
 
-import controller.DecompilerGui;
+import indi.etern.minecraftpackagepro.component.tools.decompiler.DecompilerGui ;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
