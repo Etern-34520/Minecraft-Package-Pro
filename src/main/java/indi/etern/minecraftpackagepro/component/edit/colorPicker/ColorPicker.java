@@ -48,7 +48,7 @@ public class ColorPicker extends GridPane{
 	@FXML
 	private ImageView dotDark;
 	@FXML
-	private Pane alphabg1;
+	private Pane alphaBackground1;
 	@FXML
 	private Pane colorPane;
 	@FXML
@@ -62,18 +62,12 @@ public class ColorPicker extends GridPane{
 		this.colorPlate = colorPlate;
 		colorPlate.setColorPicker(this);
 	}
-	/*
-	@FXML
-	private Rectangle colorShow2;
-	@FXML
-	private Polygon colorShow1;
-	*/
-	public ColorPicker() throws Exception{//构造函数
+	public ColorPicker() throws Exception{
 		FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
 		loader.setController(this);
 		loader.setRoot(this);
 		loader.load();
-		List<TextField> textFields=new ArrayList<TextField>();
+		List<TextField> textFields= new ArrayList<>();
 		textFields.add(textR);
 		textFields.add(textG);
 		textFields.add(textB);
@@ -88,7 +82,7 @@ public class ColorPicker extends GridPane{
 					}
 					textField.setText(t);
 				}
-					((Slider) lookup("#slider"+textField.getId().charAt(4))).setValue(Integer.valueOf(t).intValue());
+					((Slider) lookup("#slider"+textField.getId().charAt(4))).setValue(Integer.parseInt(t));
 					//sliderRed.setValue(Integer.valueOf(r).intValue());
 					colorPosition();
 				});
@@ -111,8 +105,12 @@ public class ColorPicker extends GridPane{
 		cvs = false;
 		basicColorChange(null);
 		cvs = true;
-		alphabg1.setOpacity((100-sliderA.getValue())/100.0);
-		if (alphabg1.getOpacity() < 0.5) {
+		alphaBackground1.setOpacity((100-sliderA.getValue())/100.0);
+		setDotStatus(r, g, b, v);
+	}
+	
+	private void setDotStatus(int r, int g, int b, double v) {
+		if (alphaBackground1.getOpacity() < 0.5) {
 			dotLight.setVisible(true);
 			dotDark.setVisible(false);
 		}
@@ -125,13 +123,13 @@ public class ColorPicker extends GridPane{
 			dotDark.setVisible(false);
 		}
 		
-		if (alphabg1.getOpacity() > 0.5) {
+		if (alphaBackground1.getOpacity() > 0.5) {
 			dotLight.setVisible(false);
 			dotDark.setVisible(true);
 		}
 		colorPlate.colorSet(r, g, b, sliderA.getValue());
 	}
-
+	
 	@FXML
 	public void basicColorChange(MouseEvent e) {
 
@@ -140,9 +138,7 @@ public class ColorPicker extends GridPane{
 			double x = e.getX();
 			double y = e.getY();
 			double a=Math.tanh(x*10000/(120-y)/10000.0) * 180 / Math.PI;
-			if(y>120) {
-				y=120;
-			} else {
+			if (!(y > 120)) {
 				colorPane.setRotate(ro + a);
 			}
 		}
@@ -151,56 +147,56 @@ public class ColorPicker extends GridPane{
 		int b = 0;
 		int g = 0;
 
-		ro = -ro;// 纠正左右镜像
-		int ch = Math.abs((int) Math.pow(-1, (int) ro / 360));
-		ro = ch * ro - ch * 360 * ((int) ro / 360);
+		ro = -ro;// 纠正左右翻转
+		int ch = Math.abs((int) Math.pow(-1,  ro / 360));
+		ro = ch * ro - ch * 360 * ( ro / 360);
 		if (0 < ro & ro <= 60) {
 			r = 255;
 			g = (int) (255 * ro / 60);
-			b = 0;
+			//b = 0;
 		} else if (60 < ro & ro <= 120) {
 			r = (int) (-255 * ro / 60 + 510);
 			g = 255;
-			b = 0;
+			//b = 0;
 		} else if (120 < ro & ro <= 180) {
-			r = 0;
+			//r = 0;
 			g = 255;
 			b = (int) (255 * ro / 60 - 510);
 		} else if (180 < ro & ro <= 240) {
-			r = 0;
+			//r = 0;
 			g = (int) (-255 * ro / 60 + 1020);
 			b = 255;
 		} else if (240 < ro & ro <= 300) {
 			r = (int) (255 * ro / 60 - 1020);
-			g = 0;
+			//g = 0;
 			b = 255;
 		} else if (300 < ro & ro <= 360) {
 			r = 255;
-			g = 0;
+			//g = 0;
 			b = (int) (-255 * ro / 60 + 1530);
 		} else if (-360 < ro & ro <= -300) {
 			r = 255;
 			g = (int) (255 * ro / 60 + 1530);
-			b = 0;
+			//b = 0;
 		} else if (-300 < ro & ro <= -240) {
 			r = (int) (-255 * ro / 60 - 1020);
 			g = 255;
-			b = 0;
+			//b = 0;
 		} else if (-240 < ro & ro <= -180) {
-			r = 0;
+			//r = 0;
 			g = 255;
 			b = (int) (255 * ro / 60 + 1020);
 		} else if (-180 < ro & ro <= -120) {
-			r = 0;
+			//r = 0;
 			g = (int) (-255 * ro / 60 - 510);
 			b = 255;
 		} else if (-120 < ro & ro <= -60) {
 			r = (int) (255 * ro / 60 + 510);
-			g = 0;
+			//g = 0;
 			b = 255;
 		} else if (-60 < ro & ro <= 0) {
 			r = 255;
-			g = 0;
+			//g = 0;
 			b = (int) (-255 * ro / 60);
 		}
 		colorBottom.setFill(Color.rgb(r, g, b));
@@ -235,23 +231,7 @@ public class ColorPicker extends GridPane{
 		textR.setText(Integer.toString(r));
 		textG.setText(Integer.toString(g));
 		textB.setText(Integer.toString(b));
-		if (alphabg1.getOpacity() < 0.5) {
-			dotLight.setVisible(true);
-			dotDark.setVisible(false);
-		}
-		if (v > 0.5) {
-			dotLight.setVisible(false);
-			dotDark.setVisible(true);
-		}
-		if (v < 0.5) {
-			dotLight.setVisible(true);
-			dotDark.setVisible(false);
-		}
-		if (alphabg1.getOpacity() > 0.5) {
-			dotLight.setVisible(false);
-			dotDark.setVisible(true);
-		}
-		colorPlate.colorSet(r, g, b, sliderA.getValue());
+		setDotStatus(r, g, b, v);
 	}
 
 	private void dotX(double x) {
@@ -263,10 +243,9 @@ public class ColorPicker extends GridPane{
 		dotLight.setLayoutY(y);
 		dotDark.setLayoutY(y);
 	}
-
+	
 	@FXML
 	public void dotSet(MouseEvent e) {
-		colorTop.setCursor(Cursor.NONE);
 		double ex = e.getX();// 鼠标X位置
 		double ey = e.getY();// 鼠标Y位置
 		double a = colorTop.getWidth();
@@ -275,26 +254,26 @@ public class ColorPicker extends GridPane{
 		boolean left = false;// 触碰到左
 		boolean right = false;// 触碰到右
 		double border = 0.5;
-		double addx = 0.5;
-		double addy = 0.5;
-		if (ex + addx < 0 + border) {
+		double addX = 0.5;
+		double addY = 0.5;
+		if (ex + addX < 0 + border) {
 			dotX(0 + border);
-			dotY(ey + addy);
+			dotY(ey + addY);
 			left = true;
 
 		}
-		if (ex + addx > a - border) {
+		if (ex + addX > a - border) {
 			dotX(a - border);
-			dotY(ey + addy);
+			dotY(ey + addY);
 			right = true;
 		}
-		if (ey + addy < 0 + border) {
-			dotX(ex + addx);
+		if (ey + addY < 0 + border) {
+			dotX(ex + addX);
 			dotY(0 + border);
 			top = true;
 		}
-		if (ey + addy > a - border) {
-			dotX(ex + addx);
+		if (ey + addY > a - border) {
+			dotX(ex + addX);
 			dotY(a - border);
 			bottom = true;
 		}
@@ -321,10 +300,13 @@ public class ColorPicker extends GridPane{
 			dotX(a - border);
 			dotY(a - border);
 		} else if (!(top | bottom | left | right)) {
-			dotX(ex + addx);
-			dotY(ey + addy);
+			dotX(ex + addX);
+			dotY(ey + addY);
 		}
 		colorValueSet();
+		//这一段是为了判断是否显示鼠标
+		if(showMouse) colorTop.setCursor(Cursor.CROSSHAIR);
+		else colorTop.setCursor(Cursor.NONE);
 	}
 	
 	@FXML
@@ -379,5 +361,23 @@ public class ColorPicker extends GridPane{
 	@FXML
 	private void pointerCursorHandOpen(){
 		colorPointer.setCursor(Cursor.OPEN_HAND);
+	}
+	@FXML
+	private void hideMouse(MouseEvent event){
+		dotSet(event);
+		colorTop.setCursor(Cursor.NONE);
+		showMouse=false;
+	}
+	@FXML
+	private void decideToHideMouse(MouseEvent event){
+		if(event.isPrimaryButtonDown()|event.isSecondaryButtonDown()|event.isMiddleButtonDown()){
+			colorTop.setCursor(Cursor.NONE);
+			showMouse=false;
+		}
+	}
+	boolean showMouse=false;
+	@FXML
+	private void showMouse(MouseEvent event){
+		showMouse=true;
 	}
 }

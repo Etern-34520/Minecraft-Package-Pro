@@ -67,27 +67,6 @@ public class PackDecompiler {
         }
     }
     
-    public PackDecompiler(File minecraftPath, File minecraftJar, String putPath) {
-        try {
-            String regVersion = "(\\d)+\\.+(\\d)+(\\.+(\\d))?";//x.x.x
-            if (version.matches(regVersion)) {
-                System.out.println("Version pass:" + "\"" + version + "\"");
-                if (minecraftPath.isDirectory()) {
-                    this.minecraftPath = minecraftPath;
-                    this.minecraftJar = minecraftJar;
-                    this.putPath = putPath;
-                    JarDirect = true;
-                    System.out.println("Path pass:" + "\"" + minecraftPath.getAbsolutePath() + "\"");
-                    String[] jsonVersion = version.split("\\.");
-                    mainVersion = jsonVersion[0] + "." + jsonVersion[1];
-                }
-            }
-        } catch (Exception e) {
-            reachException();
-            e.printStackTrace();
-        }
-    }
-    
     boolean libraries = true;
     boolean jar = true;
     
@@ -107,12 +86,17 @@ public class PackDecompiler {
         }
         System.out.println("canceled");
     }
-    public void pause(){
+    public void pause() {
         List<Thread> threads = this.getThreads();
         for (Thread thread : threads) {
             if (thread.isAlive()) {
                 synchronized (this) {
-                    thread.suspend();
+//                    thread.suspend();
+                    try {
+                        thread.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -122,7 +106,8 @@ public class PackDecompiler {
         for (Thread thread : threads) {
             if (thread.isAlive()) {
                 synchronized (this) {
-                    thread.resume();
+//                    thread.resume();
+                    thread.notify();
                 }
             }
         }
@@ -153,12 +138,10 @@ public class PackDecompiler {
     }
     
     public void zipUncompress(String inputFile, String destDirPath) throws Exception {
-        File srcFile = new File(inputFile);//????????????
-        // ?ж???????????
+        File srcFile = new File(inputFile);
         if (!srcFile.exists()) {
             throw new Exception(srcFile.getPath() + ":文件不存在");
         }
-        //System.out.println("Start unzip jar");
         ZipFile zipFile;
         try {
             zipFile = new ZipFile(srcFile);
@@ -167,16 +150,13 @@ public class PackDecompiler {
             e.printStackTrace();
             return;
         }
-        //??????
         Enumeration<?> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
-            //System.out.println(entry+"size:"+entry.getSize());
             if (entry.isDirectory()) {
                 System.out.println(entry);
             }
             if (entry.getName().startsWith("assets")) {
-                //System.out.println(entry);
                 if (!entry.isDirectory()) {
                     String path = entry.getName().replace("assets/", "");
                     path = path.replace("/", "\\");

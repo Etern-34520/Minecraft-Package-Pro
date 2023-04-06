@@ -65,7 +65,6 @@ public class EditPane extends Pane {
         if (newWidth<picturesPane.getMinWidth()|newHeight<picturesPane.getMinHeight()){
             return;
         }
-        //TODO 缩放有问题
         picturesPane.setLayoutX(picturesPane.getLayoutX() - (newWidth-canvas.getWidth())/2);
         picturesPane.setLayoutY(picturesPane.getLayoutY() - (newHeight-canvas.getHeight())/2);
         canvas.setWidth(newWidth);
