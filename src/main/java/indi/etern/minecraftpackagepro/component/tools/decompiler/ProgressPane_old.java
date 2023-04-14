@@ -9,64 +9,55 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.net.URL;
 
-public class ProgressPane extends VBox {
-    private ImageView pauseButtonImageView;
+public class ProgressPane_old extends GridPane {
     private PackDecompiler packDecompiler;
     @FXML
     private Label versionLabel;
     @FXML
     private ProgressBar progressBar;
     @FXML
+    private ProgressBar progressBar1;
+    @FXML
+    private AnchorPane progress;
+    @FXML
     private Button cancelButton;
     @FXML
     private Button pauseButton;
-    String version;
     boolean paused = false;
-    String pauseImage1Path;
-    String pauseImage2Path;
     public void onlyIndeterminateProgress(){
-        progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        progressBar.setVisible(false);
+        progressBar1.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        progressBar1.setVisible(true);
     }
-    ProgressPane(PackDecompiler packDecompiler, String version) {
+    ProgressPane_old(PackDecompiler packDecompiler, String version) {
         try {
             FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
             loader.setController(this);
             loader.setRoot(this);
             loader.load();
-            pauseImage1Path = String.valueOf(new URL(getClass().getResource("")+"resources/pause1.png"));
-            pauseImage2Path = String.valueOf(new URL(getClass().getResource("")+"resources/pause2.png"));
-            String stopImagePath = String.valueOf(new URL(getClass().getResource("")+"resources/stop.png"));
-            pauseButtonImageView = new ImageView(pauseImage2Path);
-            pauseButton.setGraphic(pauseButtonImageView);
-            cancelButton.setGraphic(new ImageView(stopImagePath));
-            this.version=version;
             this.versionLabel.setText(version);
             this.packDecompiler = packDecompiler;
             this.getStyleClass().add(JMetroStyleClass.BACKGROUND);
             TilePane.setMargin(this,new Insets(20,0,0,20));
-            VBox.setVgrow(this, Priority.ALWAYS);
-            VBox.setMargin(this,new Insets(8));
 //            startButton.setDisable(true);
 //            tips.setText("正在反混淆中...");
             Thread flasher = new Thread(() -> {
                 while (packDecompiler.isNotOver()) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(100);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     if (packDecompiler.isReachException()) {
-                        tip("遇到错误");
+                        Platform.runLater(() -> versionLabel.setText(versionLabel.getText() + ":遇到错误"));
                         break;
                     }
                     if (aBoolean) {
@@ -75,7 +66,7 @@ public class ProgressPane extends VBox {
                     if (packDecompiler.getProgress() == 100&aBoolean) {
                         aBoolean = false;
                         Platform.runLater(() -> {
-                            tip("解压缩中");
+                            versionLabel.setText(versionLabel.getText()+":解压缩中");
                             progressBar.setProgress(0);
                             //tips.setText("解压缩jar中，这可能需要几分钟...")
                         });
@@ -85,22 +76,25 @@ public class ProgressPane extends VBox {
                             throw new RuntimeException(e);
                         }
                         Platform.runLater(() ->{
-                            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+                            progressBar.setVisible(false);
+                            progressBar.setProgress(0);
+                            progressBar1.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+                            progressBar1.setVisible(true);
                         });
                     }
                 }
                 Platform.runLater(() -> {
+                    progressBar1.setVisible(false);
+                    versionLabel.setText("完成");
                     pauseButton.setDisable(true);
                     cancelButton.setDisable(true);
                 });
-                if (!packDecompiler.isStop()) tip("完成");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                assert this.getParent() instanceof VBox;
-                Platform.runLater(() -> ((VBox) this.getParent()).getChildren().remove(this));
+                Platform.runLater(() -> ((TilePane) this.getParent()).getChildren().remove(this));
             });
             flasher.start();
             packDecompiler.start();
@@ -112,31 +106,41 @@ public class ProgressPane extends VBox {
     @FXML
     void cancel(MouseEvent event) {
         packDecompiler.cancel();
-        final ProgressPane finalPane = this;
+        final ProgressPane_old finalPane = this;
         new Thread(() -> {
-            tip("已取消");
+            Platform.runLater(() -> versionLabel.setText("已取消"));
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            Platform.runLater(() -> ((VBox) finalPane.getParent()).getChildren().remove(finalPane));
+            Platform.runLater(() -> ((TilePane) finalPane.getParent()).getChildren().remove(finalPane));
         }).start();
     }
+    
+    @FXML
+    void showSettings() {
+        cancelButton.setVisible(true);
+        pauseButton.setVisible(true);
+    }
+    
+    @FXML
+    void hideSettings() {
+        cancelButton.setVisible(false);
+        pauseButton.setVisible(false);
+    }
+    
     boolean aBoolean = true;
+    
     @FXML
     void pause() {
         if (!paused) {
-            pauseButtonImageView.setImage(new Image(pauseImage1Path));
             packDecompiler.pause();
+            pauseButton.setText("继续");
         } else {
-            pauseButtonImageView.setImage(new Image(pauseImage2Path));
             packDecompiler.reStart();
+            pauseButton.setText("暂停");
         }
         paused = !paused;
-    }
-    
-    public void tip(String message) {
-        Platform.runLater(() -> versionLabel.setText(version + "：" + message));
     }
 }

@@ -1,5 +1,6 @@
 package indi.etern.minecraftpackagepro.io;
 
+import indi.etern.minecraftpackagepro.component.tools.decompiler.ProgressPane;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -23,12 +24,14 @@ public class PackDecompiler {
     private int readLength = 0;
     private File minecraftPath;
     private String version;
-    public int over1 = 0;
-    public boolean over2 = false;
+    private boolean over1 = false;
+    private boolean over2 = false;
+    private boolean stop=false;
     private String mainVersion;
-    public boolean reachException = false;
+    private boolean reachException = false;
     private final List<Thread> threads = new ArrayList<>();
     private boolean JarDirect;
+    private ProgressPane progressPane;
     
     public List<Thread> getThreads() {
         return threads;
@@ -67,8 +70,8 @@ public class PackDecompiler {
         }
     }
     
-    boolean libraries = true;
-    boolean jar = true;
+    private boolean libraries = true;
+    private boolean jar = true;
     
     public void librariesAble(boolean set) {
         libraries = set;
@@ -82,7 +85,8 @@ public class PackDecompiler {
         progress = 0;
         List<Thread> threads = this.getThreads();
         for (Thread thread : threads) {
-            thread.stop();
+            stop=true;
+//            thread.stop();
         }
         System.out.println("canceled");
     }
@@ -91,12 +95,7 @@ public class PackDecompiler {
         for (Thread thread : threads) {
             if (thread.isAlive()) {
                 synchronized (this) {
-//                    thread.suspend();
-                    try {
-                        thread.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    thread.suspend();
                 }
             }
         }
@@ -106,8 +105,7 @@ public class PackDecompiler {
         for (Thread thread : threads) {
             if (thread.isAlive()) {
                 synchronized (this) {
-//                    thread.resume();
-                    thread.notify();
+                    thread.resume();
                 }
             }
         }
@@ -129,18 +127,18 @@ public class PackDecompiler {
         }
         if ((!jar) && libraries) {
             progress = 100;
-            over1 = 5;
+            over1 = true;
         }
     }
     
-    public boolean isOver() {
-        return (over1 == 5) && over2;
+    public boolean isNotOver() {
+        return !over1 || !over2;
     }
     
     public void zipUncompress(String inputFile, String destDirPath) throws Exception {
         File srcFile = new File(inputFile);
         if (!srcFile.exists()) {
-            throw new Exception(srcFile.getPath() + ":文件不存在");
+            throw new IOException(srcFile.getPath() + ":文件不存在");
         }
         ZipFile zipFile;
         try {
@@ -151,7 +149,7 @@ public class PackDecompiler {
             return;
         }
         Enumeration<?> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
+        while (!stop&&entries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
             if (entry.isDirectory()) {
                 System.out.println(entry);
@@ -162,10 +160,12 @@ public class PackDecompiler {
                     path = path.replace("/", "\\");
                     File targetFile = new File(destDirPath + "\\" + path);
                     if (!targetFile.getParentFile().exists()) {
-                        targetFile.getParentFile().mkdirs();
+                        boolean result = targetFile.getParentFile().mkdirs();
+//                        System.out.println("mkdirs() succeed?:"+result);
                     }
                     if (!targetFile.exists()) {
-                        targetFile.createNewFile();
+                        boolean result = targetFile.createNewFile();
+//                        System.out.println("createNewFile() succeed?:"+result);
                         InputStream is = zipFile.getInputStream(entry);
                         FileOutputStream fos = new FileOutputStream(targetFile);
                         int len;
@@ -179,18 +179,38 @@ public class PackDecompiler {
                 }
             }
         }
-        over1++;
+        over1=true;
     }
     
+    public void setProgressPane(ProgressPane progressPane) {
+        this.progressPane = progressPane;
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+
     private class HashThread extends Thread {
         @Override
         public void run() {
             try {
-                fileMap = (HashMap<String, String>) new ResourceIndex(new File(minecraftPath.getAbsolutePath() + "\\assets"), mainVersion).getResourceMap();//Use Minecraft's code from Mojang to prevent bugs :(
+                fileMap = (HashMap<String, String>) new ResourceIndex(
+                        new File(minecraftPath.getAbsolutePath() + "\\assets")
+                        , mainVersion
+                ).getResourceMap();//Use Minecraft's code from Mojang to prevent bugs :(
                 indexLength = fileMap.size();
                 File objects = new File(minecraftPath.getAbsolutePath() + "\\assets\\objects");
+                progressPane.tip("Hash读取完毕，开始反混淆");
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    progressPane.tip("");
+                }).start();
                 System.out.println("Read information done");
-
                 indexLength = fileMap.size();
                 System.out.println("size:" + indexLength);
                 filesDirs(objects);
@@ -204,7 +224,7 @@ public class PackDecompiler {
     }
 
     public void filesDirs(File file) {
-        if (file != null) {
+        if (!stop&&file != null) {
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 assert files != null;
@@ -220,7 +240,8 @@ public class PackDecompiler {
                         progress = readLength * 100 / indexLength;
 
                         File put = new File(putPath + "\\" + fileMap.get(file.getName()).replace(':', '\\'));
-                        put.getParentFile().mkdirs();
+                        boolean result = put.getParentFile().mkdirs();
+//                        System.out.println("mkdirs() succeed?:"+result);
                         FileUtils.copyFile(file, put);
                         //copyFile(file,put);
                     }
@@ -229,7 +250,7 @@ public class PackDecompiler {
                     e.printStackTrace();
                 }
             }
-        } else {
+        } else if(!stop) {
             System.out.println("反混淆assets完成");
         }
     }

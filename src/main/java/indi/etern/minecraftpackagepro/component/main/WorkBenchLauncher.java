@@ -2,10 +2,13 @@ package indi.etern.minecraftpackagepro.component.main;
 
 import indi.etern.minecraftpackagepro.component.bench.EditPane;
 import indi.etern.minecraftpackagepro.component.bench.WorkBench;
+import indi.etern.minecraftpackagepro.component.bench.WorkBench.Way;
 import indi.etern.minecraftpackagepro.component.edit.colorPicker.ColorPicker;
 import indi.etern.minecraftpackagepro.component.edit.colorPlate.ColorPlate;
+import indi.etern.minecraftpackagepro.component.tools.decompiler.DecompilerGui;
 import indi.etern.minecraftpackagepro.io.FileTree;
 import indi.etern.minecraftpackagepro.io.FileTree.tsFile;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +21,7 @@ import jfxtras.styles.jmetro.Style;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WorkBenchLauncher extends Application {
 
@@ -32,15 +36,17 @@ public class WorkBenchLauncher extends Application {
         stage.show();
 
         ColorPicker colorPicker = new ColorPicker();
-        WorkBench.add(colorPicker, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_TOP,"RGB");
+        WorkBench.add(colorPicker, Way.LEFT_TOP,"RGB");
 
         ColorPlate colorPlate = new ColorPlate();
-        WorkBench.add(colorPlate, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_BOTTOM, "plate");
+        WorkBench.add(colorPlate, Way.LEFT_BOTTOM, "plate");
         
         colorPicker.setColorPlate(colorPlate);
         
-        /*DecompilerGui decompilerGui = new DecompilerGui();
-        WorkBench.add(decompilerGui, WorkBench.Way.BOTTOM_LEFT,"资源包提取");*/
+        DecompilerGui decompilerGui = new DecompilerGui();
+        WorkBench.add(decompilerGui, Way.RIGHT_TOP,"资源包提取");
+        decompilerGui.setVertical(true);
+        decompilerGui.setPrefWidth(300);
     
         FileTree fileTree = new FileTree();
         TreeItem<tsFile> root = new TreeItem<>();
@@ -55,7 +61,7 @@ public class WorkBenchLauncher extends Application {
         });
         ContextMenu contextMenu = new ContextMenu(refresh);
         treeView.setContextMenu(contextMenu);
-        WorkBench.add(treeView, indi.etern.minecraftpackagepro.component.bench.WorkBench.Way.LEFT_TOP, "packView");
+        WorkBench.add(treeView, Way.LEFT_TOP, "packView");
     
         TabPane tabPane = new TabPane();
     
@@ -99,7 +105,24 @@ public class WorkBenchLauncher extends Application {
             }
 
         });
+        stage.setOnCloseRequest(event -> {
+            if (isAllTasksOver(decompilerGui)) {
+                Alert warming = new Alert(Alert.AlertType.CONFIRMATION, "确认关闭？");
+                warming.setHeaderText("确认关闭?");
+                Optional<ButtonType> result = warming.showAndWait();
+                if (result.isPresent()&&result.get() == ButtonType.OK) {
+                    System.out.println("closed");
+                    System.exit(0);
+                } else {
+                    event.consume();
+                }
+            }
+        });
         WorkBench.setCenterBasic(tabPane);
+    }
+
+    private static boolean isAllTasksOver(DecompilerGui decompilerGui) {
+        return decompilerGui.decompileProgress.getChildren().size() != 0;
     }
 
     public static void main(String[] args){

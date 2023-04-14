@@ -166,7 +166,7 @@
                         </LinearGradient>
                      </fill>
                   </Rectangle>
-                  <Pane fx:id="alphabg1" layoutX="-0.5" layoutY="-0.5" opacity="0.0" prefHeight="141.0" prefWidth="141.0">
+                  <Pane fx:id="alphaBackground1" layoutX="-0.5" layoutY="-0.5" opacity="0.0" prefHeight="141.0" prefWidth="141.0">
                      <children>
                         <ImageView fitHeight="141.0" fitWidth="141.0" pickOnBounds="true" preserveRatio="true">
                            <image>

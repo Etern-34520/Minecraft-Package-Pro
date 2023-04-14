@@ -11,13 +11,12 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<fx:root dividerPositions="0.3528428093645485" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root dividerPositions="0.3528428093645485" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="SplitPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <items>
-      <VBox>
+      <VBox minHeight="350.0">
          <children>
             <TabPane fx:id="decompileModeSelectPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                <tabs>
@@ -210,7 +209,7 @@
       </VBox>
       <ScrollPane fx:id="decompileProgressParent" hbarPolicy="NEVER">
          <content>
-            <TilePane fx:id="decompileProgress" prefHeight="0.0" prefWidth="371.0" />
+            <VBox fx:id="decompileProgress" />
          </content>
       </ScrollPane>
    </items>

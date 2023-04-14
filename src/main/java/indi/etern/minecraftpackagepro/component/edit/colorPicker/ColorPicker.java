@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColorPicker extends GridPane{
-	boolean cvs = true;
+	boolean cvs = true;//colorValueSet
 	@FXML
 	private Polygon colorPointer;
 	@FXML
@@ -131,14 +131,14 @@ public class ColorPicker extends GridPane{
 	}
 	
 	@FXML
-	public void basicColorChange(MouseEvent e) {
+	private void basicColorChange(MouseEvent e) {
 
 		double ro = colorPane.getRotate();// 度数
 		if (e != null) {
 			double x = e.getX();
 			double y = e.getY();
 			double a=Math.tanh(x*10000/(120-y)/10000.0) * 180 / Math.PI;
-			if (!(y > 120)) {
+			if (y <= 120) {
 				colorPane.setRotate(ro + a);
 			}
 		}
@@ -148,8 +148,8 @@ public class ColorPicker extends GridPane{
 		int g = 0;
 
 		ro = -ro;// 纠正左右翻转
-		int ch = Math.abs((int) Math.pow(-1,  ro / 360));
-		ro = ch * ro - ch * 360 * ( ro / 360);
+		int ch = Math.abs((int) Math.pow(-1,(int) ro / 360));
+		ro = ch * ro - ch * 360 * ((int) ro / 360);//不要改，否则无法正常运行
 		if (0 < ro & ro <= 60) {
 			r = 255;
 			g = (int) (255 * ro / 60);

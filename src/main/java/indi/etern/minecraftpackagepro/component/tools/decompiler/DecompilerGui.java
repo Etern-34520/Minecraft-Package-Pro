@@ -4,11 +4,13 @@ import indi.etern.minecraftpackagepro.io.PackDecompiler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import jfxtras.styles.jmetro.JMetroStyleClass;
@@ -25,7 +27,7 @@ public class DecompilerGui extends SplitPane {
     @FXML
     private TextField putPathTextField;
     @FXML
-    public TilePane decompileProgress;
+    public VBox decompileProgress;
     @FXML
     private ListView<String> minecraftVersionsView;
     @FXML
@@ -59,24 +61,23 @@ public class DecompilerGui extends SplitPane {
             loader.setController(this);
             loader.setRoot(this);
             loader.load();
-            decompileProgress.setHgap(20);
-            decompileProgress.setVgap(20);
             byte[] def = "".getBytes();
+            //FIXME 字符串编码错误
             {
-                String readedMinecraftPath = byteArrayToString(Preferences.userRoot().getByteArray("MinecraftPath", def));
-                minecraftPathTextField.setText(readedMinecraftPath);
-                minecraftPathTextField1.setText(readedMinecraftPath);
-                minecraftPath = new File(readedMinecraftPath);
-                if (new File(readedMinecraftPath).exists()) {
+                String readMinecraftPath = byteArrayToString(Preferences.userRoot().getByteArray("MinecraftPath", def));
+                minecraftPathTextField.setText(readMinecraftPath);
+                minecraftPathTextField1.setText(readMinecraftPath);
+                minecraftPath = new File(readMinecraftPath);
+                if (new File(readMinecraftPath).exists()) {
                     versionsViewFlash();
                     minecraftVersionsView.setDisable(false);
                 }
             }
             {
-                String readedPutPath = byteArrayToString(Preferences.userRoot().getByteArray("PutPath", def));
-                putPathTextField.setText(readedPutPath);
-                putPathTextField1.setText(readedPutPath);
-                putPath = readedPutPath;
+                String readPutPath = byteArrayToString(Preferences.userRoot().getByteArray("PutPath", def));
+                putPathTextField.setText(readPutPath);
+                putPathTextField1.setText(readPutPath);
+                putPath = readPutPath;
             }
             minecraftVersionsView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             this.getStyleClass().add("text_color: rgb(135,147,154);");
@@ -96,6 +97,11 @@ public class DecompilerGui extends SplitPane {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void setVertical(boolean b) {
+        if (b) setOrientation(Orientation.VERTICAL);
+        else setOrientation(Orientation.HORIZONTAL);
     }
     
     @FXML
@@ -119,7 +125,7 @@ public class DecompilerGui extends SplitPane {
             }
             putPath = putPathTextField.getText();
             if (!new File(putPath).exists()) {
-                new File(putPath).mkdirs();
+                boolean result = new File(putPath).mkdirs();
                 tip("路径不存在，已经创建完成", 2000);
             } else if (!new File(putPath).isDirectory()) {
                 tip("不是路径", 2000);
@@ -196,18 +202,7 @@ public class DecompilerGui extends SplitPane {
                     putPath = putPath + "\\";
                 }
                 for (String version : versions) {
-                    PackDecompiler packDecompiler = new PackDecompiler(
-                            minecraftPath,
-                            version,
-                            putPath + "minecraftDefaultPack_" + version
-                    );
-                    packDecompiler.librariesAble(librariesCheck.isSelected());
-                    packDecompiler.jarAble(jarCheck.isSelected());
-                    ProgressPane progressPane = new ProgressPane(packDecompiler, version);
-                    decompileProgress.getChildren().add(progressPane);
-                    if ((!librariesCheck.isSelected()) && jarCheck.isSelected()) {
-                        progressPane.onlyIndeterminateProgress();
-                    }
+                    newPackageDecompiler(version);
                 }
             } else if (decompileModeSelectPane.getSelectionModel().getSelectedIndex() == 1) {
                 putPath = putPathTextField.getText();
@@ -215,21 +210,26 @@ public class DecompilerGui extends SplitPane {
                     putPath = putPath + "\\";
                 }
                 String version = minecraftVersionTextField.getText();
-                PackDecompiler packDecompiler = new PackDecompiler(
-                        minecraftPath,
-                        version,
-                        putPath + "minecraftDefaultPack_" + version
-                );
-                packDecompiler.librariesAble(librariesCheck.isSelected());
-                packDecompiler.jarAble(jarCheck.isSelected());
-                ProgressPane progressPane = new ProgressPane(packDecompiler, version);
-                decompileProgress.getChildren().add(progressPane);
-                if ((!librariesCheck.isSelected()) && jarCheck.isSelected()) {
-                    progressPane.onlyIndeterminateProgress();
-                }
+                newPackageDecompiler(version);
             }
         } else {
             tip("未选择反混淆项", 2000);
+        }
+    }
+    
+    private void newPackageDecompiler(String version) {
+        PackDecompiler packDecompiler = new PackDecompiler(
+                minecraftPath,
+                version,
+                putPath + "minecraftDefaultPack_" + version
+        );
+        packDecompiler.librariesAble(librariesCheck.isSelected());
+        packDecompiler.jarAble(jarCheck.isSelected());
+        ProgressPane progressPane = new ProgressPane(packDecompiler, version);
+        packDecompiler.setProgressPane(progressPane);
+        decompileProgress.getChildren().add(progressPane);
+        if ((!librariesCheck.isSelected()) && jarCheck.isSelected()) {
+            progressPane.onlyIndeterminateProgress();
         }
     }
     

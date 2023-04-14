@@ -10,7 +10,6 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,7 +59,6 @@ public class WorkBench extends GridPane {
 
     HashMap<Node,SplitPane> parents = new HashMap<>();
     public WorkBench(){
-        URL url;
         try {
             FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
             loader.setRoot(this);
@@ -92,7 +90,7 @@ public class WorkBench extends GridPane {
             buttonBar = topLeftBar;
             splitPane = topPane;
             group = topLeftGroup;
-            index = 0;
+            //index = 0;
         } else if (way == Way.TOP_RIGHT){
             buttonBar = topRightBar;
             splitPane = topPane;
@@ -104,12 +102,12 @@ public class WorkBench extends GridPane {
             buttonBar = leftTopBar;
             splitPane = leftPane;
             group = leftTopGroup;
-            index=0;
+            //index=0;
         } else if (way == Way.RIGHT_TOP){
             buttonBar = rightTopBar;
             splitPane = rightPane;
             group = rightTopGroup;
-            index=0;
+            //index=0;
         } else if (way == Way.LEFT_BOTTOM) {
             buttonBar = leftBottomBar;
             splitPane = leftPane;
@@ -128,7 +126,7 @@ public class WorkBench extends GridPane {
             buttonBar = bottomLeftBar;
             splitPane = bottomPane;
             group = bottomLeftGroup;
-            index=0;
+            //index=0;
         } else if (way == Way.BOTTOM_RIGHT){
             buttonBar = bottomRightBar;
             splitPane = bottomPane;
