@@ -1,7 +1,13 @@
 package indi.etern.minecraftpackagepro.io;
 
+import indi.etern.minecraftpackagepro.component.bench.EditPane;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -19,6 +25,51 @@ public class FileTree {
     }
 
     private TreeItem<tsFile> rootOfAll;
+    
+    public void setTreeViewAndTabPane(TreeView<tsFile> treeView, TabPane tabPane) {
+        treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<tsFile>> observable, TreeItem<FileTree.tsFile> oldValue, TreeItem<FileTree.tsFile> newValue) {
+                EditPane EditPane = new EditPane();
+                if (newValue != null) {
+                    tsFile picture = newValue.getValue();
+                    EditPane.uploadPicture(picture);
+                }
+                if (EditPane.toTab() != null) {
+                    if (contains(EditPane.toTab())) {
+                        tabPane.selectionModelProperty().get().select(getInTabList(EditPane.toTab()));
+                    } else {
+                        tabPane.getTabs().add(EditPane.toTab());
+                        tabPane.selectionModelProperty().get().select(getInTabList(EditPane.toTab()));
+                    }
+                }
+                
+                //System.out.println("item:"+newValue);
+            }
+            
+            private Tab getInTabList(Tab tab) {
+                List<tsFile> tabNames = new ArrayList<>();
+                for (int i = 0; i < tabPane.getTabs().size(); i++) {
+                    tabNames.add(new FileTree.tsFile(tabPane.getTabs().get(i).getText()));
+                }
+                int array = 0;
+                for (int i = 0; i < tabPane.getTabs().size(); i++) {
+                    if (tabNames.get(i).getName().equals(tab.getText())) array = i;
+                }
+                return tabPane.getTabs().get(array);
+            }
+            
+            private boolean contains(Tab tab) {
+                List<String> tabNames = new ArrayList<>();
+                for (int i = 0; i < tabPane.getTabs().size(); i++) {
+                    tabNames.add(tabPane.getTabs().get(i).getText());
+                }
+                return tabNames.contains(tab.getText());
+            }
+            
+        });
+    }
+    
     public static class tsFile extends File{
         public tsFile(String pathname) {
             super(pathname);

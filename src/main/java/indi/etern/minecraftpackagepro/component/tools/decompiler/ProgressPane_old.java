@@ -50,7 +50,7 @@ public class ProgressPane_old extends GridPane {
 //            startButton.setDisable(true);
 //            tips.setText("正在反混淆中...");
             Thread flasher = new Thread(() -> {
-                while (packDecompiler.isNotOver()) {
+                while (!packDecompiler.isOver()) {
                     try {
                         Thread.sleep(100);
                     } catch (Exception e) {

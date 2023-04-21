@@ -1,5 +1,6 @@
 package indi.etern.minecraftpackagepro.component.tools.decompiler;
 
+import indi.etern.minecraftpackagepro.dataBUS.Setting;
 import indi.etern.minecraftpackagepro.io.PackDecompiler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -9,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -19,7 +19,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 public class DecompilerGui extends SplitPane {
     @FXML
@@ -52,8 +51,9 @@ public class DecompilerGui extends SplitPane {
     private TextField minecraftCorePathTextField;
     @FXML
     private TextField minecraftVersionTextField;
-    File minecraftPath;
-    public String putPath;
+    private String minecraftPath;
+    private String putPath;
+    private final Setting setting = Setting.getInstance();
     
     public DecompilerGui() {
         try {
@@ -61,39 +61,53 @@ public class DecompilerGui extends SplitPane {
             loader.setController(this);
             loader.setRoot(this);
             loader.load();
-            byte[] def = "".getBytes();
-            //FIXME 字符串编码错误
-            {
-                String readMinecraftPath = byteArrayToString(Preferences.userRoot().getByteArray("MinecraftPath", def));
-                minecraftPathTextField.setText(readMinecraftPath);
-                minecraftPathTextField1.setText(readMinecraftPath);
-                minecraftPath = new File(readMinecraftPath);
-                if (new File(readMinecraftPath).exists()) {
+//            byte[] def = "".getBytes();
+            
+            String[] paths = (String[])setting.get("DecompilerLastPath");
+            if (paths != null) {
+                String readPutPath = paths[1];
+                if (readPutPath != null) {
+                    putPathTextField.setText(readPutPath);
+                    putPathTextField1.setText(readPutPath);
+                    putPath = readPutPath;
+                    testPutPath();
+                }
+                
+                String readMinecraftPath = paths[0];
+                if (readMinecraftPath != null&&new File(readMinecraftPath).exists()) {
+                    minecraftPathTextField.setText(readMinecraftPath);
+                    minecraftPathTextField1.setText(readMinecraftPath);
+                    minecraftPath = readMinecraftPath;
                     versionsViewFlash();
                     minecraftVersionsView.setDisable(false);
                 }
             }
-            {
-                String readPutPath = byteArrayToString(Preferences.userRoot().getByteArray("PutPath", def));
-                putPathTextField.setText(readPutPath);
-                putPathTextField1.setText(readPutPath);
-                putPath = readPutPath;
-            }
+            
             minecraftVersionsView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             this.getStyleClass().add("text_color: rgb(135,147,154);");
             this.getStyleClass().add(JMetroStyleClass.BACKGROUND);
             decompileProgress.prefWidthProperty().bind(decompileProgressParent.widthProperty().subtract(5));
-            minecraftPathTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                File minecraftPathNew = new File(minecraftPathTextField.getText());
-                if (!minecraftPathNew.exists()) {
-                    tip("路径不存在", 2000);
-                } else if (!new File(minecraftPathNew.getPath() + "\\" + "versions").exists() | !new File(minecraftPathNew.getPath() + "\\" + "libraries").exists()) {
-                    tip("路径不正确或者minecraft文件缺失", 2000);
-                } else {
-                    minecraftPath = minecraftPathNew;
+            
+            TextField[] textFields = {minecraftPathTextField,minecraftPathTextField1,putPathTextField,putPathTextField1,minecraftCorePathTextField,minecraftVersionTextField};
+            for (TextField textField : textFields) {
+                textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                    testMinecraftPath();
+                    testPutPath();
+                    testVersion();
+                    startButton.setDisable(!minecraftVersionTextField.getText().matches("(\\d)+\\.+(\\d)+(\\.+(\\d))?"));//x.x.x
+                });
+            }
+            minecraftVersionsView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> testPutPath());
+            decompileModeSelectPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
+                testMinecraftPath();
+                testPutPath();
+                if (decompileModeSelectPane.getSelectionModel().isSelected(1)){
+                    startButton.setDisable(!minecraftVersionTextField.getText().matches("(\\d)+\\.+(\\d)+(\\.+(\\d))?"));
                 }
             });
-            minecraftVersionsView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> startButton.setDisable(false));
+            minecraftVersionTextField.focusedProperty().addListener(observable -> {
+                startButton.setDisable(!minecraftVersionTextField.getText().matches("(\\d)+\\.+(\\d)+(\\.+(\\d))?"));//x.x.x
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,38 +119,67 @@ public class DecompilerGui extends SplitPane {
     }
     
     @FXML
-    void selectAll() {
+    private void selectAll() {
         minecraftVersionsView.getSelectionModel().selectAll();
     }
     
     @FXML
-    void refreshPath(KeyEvent event) {
+    private void refreshPath(KeyEvent event) {
         if (event.getCode().equals(KeyCode.ENTER)) {
-            File minecraftPath = new File(((TextField) event.getSource()).getText());
-            if (!minecraftPath.exists()) {
-                tip("路径不存在", 2000);
-            } else if (!new File(minecraftPath.getPath() + "\\" + "versions").exists() | !new File(minecraftPath.getPath() + "\\" + "libraries").exists()) {
-                tip("路径不正确或者minecraft文件缺失", 2000);
-            } else {
-                this.minecraftPath = minecraftPath;
-                startButton.setDisable(false);
-                minecraftVersionsView.setDisable(false);
-                versionsViewFlash();
-            }
-            putPath = putPathTextField.getText();
-            if (!new File(putPath).exists()) {
-                boolean result = new File(putPath).mkdirs();
+            testMinecraftPath();
+        }
+    }
+    
+    private void testMinecraftPath() {
+        String minecraftPath;
+        if (decompileModeSelectPane.getSelectionModel().isSelected(0)) {
+            minecraftPath = minecraftPathTextField.getText();
+            minecraftPathTextField1.setText(minecraftPath);
+        }
+        else {
+            minecraftPath = minecraftPathTextField1.getText();
+            minecraftPathTextField1.setText(minecraftPath);
+        }
+        if (!new File(minecraftPath).exists()) {
+            tip("路径不存在", 2000);
+        } else if (!new File(minecraftPath + "\\" + "versions").exists() | !new File(minecraftPath + "\\" + "libraries").exists()) {
+            tip("路径不正确或者minecraft文件缺失", 2000);
+        } else {
+            this.minecraftPath = minecraftPath;
+            minecraftVersionsView.setDisable(false);
+            versionsViewFlash();
+        }
+        putPath = putPathTextField.getText();
+        System.out.println(putPath);
+        testPutPath();
+    }
+    
+    private void testPutPath() {
+        File put = new File(putPath);
+        if (!put.canWrite()){
+            tip("输出目录不可写",4000);
+            startButton.setDisable(true);
+        } else if (!put.exists()) {
+            boolean result = put.mkdirs();
+            if (result){
                 tip("路径不存在，已经创建完成", 2000);
-            } else if (!new File(putPath).isDirectory()) {
-                tip("不是路径", 2000);
-                putPathTextField.setText("");
-                putPath = null;
+                startButton.setDisable(false);
+            } else {
+                tip("路径不存在，创建失败", 2000);
+                startButton.setDisable(true);
             }
+        } else if (!put.isDirectory()) {
+            tip("不是路径", 2000);
+            putPathTextField.setText("");
+            putPath = null;
+            startButton.setDisable(true);
+        } else {
+            startButton.setDisable(false);
         }
     }
     
     @FXML
-    void selectPath(MouseEvent event) {
+    private void selectPath(MouseEvent event) {
         DirectoryChooser minecraftPathChooser = new DirectoryChooser();
         minecraftPathChooser.setTitle("选择.minecraft文件夹路径");
         new FileChooser.ExtensionFilter("JAR", "*.jar");
@@ -144,17 +187,18 @@ public class DecompilerGui extends SplitPane {
         File minecraftPath =
                 minecraftPathChooser.showDialog(this.getScene().getWindow());
         if (minecraftPath != null) {
-            this.minecraftPath = minecraftPath;
+            this.minecraftPath = minecraftPath.getPath();
             minecraftPathTextField.setText(minecraftPath.getPath());
             minecraftPathTextField1.setText(minecraftPath.getPath());
             minecraftVersionsView.setDisable(false);
-            Preferences.userRoot().putByteArray("MinecraftPath", minecraftPath.getPath().getBytes());
+//            Preferences.userRoot().putByteArray("MinecraftPath", minecraftPath.getPath().getBytes());
+            setting.put("DecompilerLastPath", new String[]{this.minecraftPath,putPath});
             versionsViewFlash();
         }
     }
     
     @FXML
-    void selectPutPath() {
+    private void selectPutPath() {
         DirectoryChooser putPathChooser = new DirectoryChooser();
         putPathChooser.setTitle("选择导出MinecraftDefaultPack文件夹路径");
         File put =
@@ -166,12 +210,13 @@ public class DecompilerGui extends SplitPane {
             }
             putPathTextField.setText(put.getPath());
             putPathTextField1.setText(put.getPath());
-            Preferences.userRoot().putByteArray("PutPath", putPath.getBytes());
+//            Preferences.userRoot().putByteArray("PutPath", putPath.getBytes());
+            setting.put("DecompilerLastPath", new String[]{minecraftPath,putPath});
         }
     }
     public void versionsViewFlash(){
         minecraftVersionsView.getItems().removeAll(minecraftVersionsView.getItems());
-        File file=new File(minecraftPath.getPath()+"\\versions");
+        File file=new File(minecraftPath+"\\versions");
         //判断是否有目录
         if(file.isDirectory()) {
             File[] files=file.listFiles();
@@ -185,7 +230,8 @@ public class DecompilerGui extends SplitPane {
             });
             try {
                 minecraftVersionsView.getSelectionModel().selectFirst();
-                startButton.setDisable(false);
+                testPutPath();
+//                startButton.setDisable(false);
             } catch (Exception e) {
                 tip("还没有任何Minecraft版本", 5000);
             }
@@ -193,8 +239,8 @@ public class DecompilerGui extends SplitPane {
     }
     
     @FXML
-    void start(MouseEvent event) {
-        if (librariesCheck.isSelected() | jarCheck.isSelected()) {
+    private void start(MouseEvent event) {
+        if (putPathTextField.getText()!=null&&putPathTextField1.getText()!=null&&minecraftVersionTextField!=null&&minecraftCorePathTextField!=null&&(librariesCheck.isSelected() | jarCheck.isSelected())) {
             if (decompileModeSelectPane.getSelectionModel().getSelectedIndex() == 0) {
                 List<String> versions = minecraftVersionsView.getSelectionModel().getSelectedItems();
                 putPath = putPathTextField.getText();
@@ -205,21 +251,44 @@ public class DecompilerGui extends SplitPane {
                     newPackageDecompiler(version);
                 }
             } else if (decompileModeSelectPane.getSelectionModel().getSelectedIndex() == 1) {
+                minecraftPath = minecraftPathTextField1.getText();
+                minecraftPathTextField.setText(minecraftPathTextField1.getText());
                 putPath = putPathTextField.getText();
                 if (!putPath.endsWith("\\")) {
                     putPath = putPath + "\\";
                 }
-                String version = minecraftVersionTextField.getText();
-                newPackageDecompiler(version);
+                PackDecompiler decompiler = new PackDecompiler(new File(minecraftPath),new File(minecraftCorePathTextField.getText()),minecraftVersionTextField.getText(),putPath);
+                ProgressPane progressPane = new ProgressPane(decompiler,minecraftVersionTextField.getText());
+                decompiler.setProgressPane(progressPane);
+                decompileProgress.getChildren().add(progressPane);
+                if ((!librariesCheck.isSelected()) && jarCheck.isSelected()) {
+                    progressPane.onlyIndeterminateProgress();
+                }
             }
         } else {
             tip("未选择反混淆项", 2000);
         }
     }
     
+    private void testVersion() {
+        String version = minecraftVersionTextField.getText();
+        if (minecraftVersionTextField.getText().matches("(\\d)+\\.+(\\d)+(\\.+(\\d))?")) {
+            String[] versionNum = version.split("\\.");
+            File versionHash = new File(minecraftPath + "\\assets\\indexes\\" + versionNum[0] + "." + versionNum[1] + ".json");
+            if (!versionHash.exists()) {
+                tip("版本不存在", 2000);
+            }
+        } else {
+            tip("版本格式错误", 2000);
+        }
+        File jar = new File(minecraftCorePathTextField.getText());
+        if (!jar.exists()) tip("核心Jar位置错误",2000);
+        else if (!jar.canRead()) tip("核心Jar不可读",2000);
+    }
+    
     private void newPackageDecompiler(String version) {
         PackDecompiler packDecompiler = new PackDecompiler(
-                minecraftPath,
+                new File(minecraftPath),
                 version,
                 putPath + "minecraftDefaultPack_" + version
         );
@@ -246,7 +315,7 @@ public class DecompilerGui extends SplitPane {
     }
     
     @FXML
-    void selectJarPath(MouseEvent event) {
+    private void selectJarPath(MouseEvent event) {
         FileChooser minecraftJarChooser = new FileChooser();
         minecraftJarChooser.setInitialDirectory(new File(minecraftPathTextField.getText() + "\\versions"));
         minecraftJarChooser.setTitle("选择minecraft核心Jar");
@@ -258,15 +327,6 @@ public class DecompilerGui extends SplitPane {
             minecraftCorePathTextField.setText(minecraftJar.getPath());
 //            versionsViewFlash();
         }
-    }
-    
-    public String byteArrayToString(byte[] a) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte i : a) {
-            char c = (char) i;
-            stringBuilder.append(c);
-        }
-        return stringBuilder.toString();
     }
     
 }

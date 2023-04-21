@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" type="GridPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="21.0" minWidth="21.0" prefWidth="21.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -64,22 +64,22 @@
       </Pane>
       <SplitPane fx:id="allParent" dividerPositions="0.14887640449438203, 0.8623595505617978" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" style="-fx-border-color: rgb(53,53,53);" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <items>
-            <SplitPane fx:id="topPane" prefHeight="160.0" prefWidth="200.0" />
+            <SplitPane fx:id="topPane" />
             <SplitPane fx:id="leftRightParent" dividerPositions="0.20323741007194246, 0.7859712230215827" prefHeight="160.0" prefWidth="200.0">
                <items>
-                  <SplitPane fx:id="leftPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" />
-                  <GridPane fx:id="centerParent">
+                  <SplitPane fx:id="leftPane" orientation="VERTICAL" />
+                  <GridPane fx:id="centerParent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
                      </columnConstraints>
                      <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
                      </rowConstraints>
                   </GridPane>
-                  <SplitPane fx:id="rightPane" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" />
+                  <SplitPane fx:id="rightPane" orientation="VERTICAL" />
                </items>
             </SplitPane>
-            <SplitPane fx:id="bottomPane" prefHeight="160.0" prefWidth="200.0" />
+            <SplitPane fx:id="bottomPane" />
          </items>
       </SplitPane>
       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="3" />

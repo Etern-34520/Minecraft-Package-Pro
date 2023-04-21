@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "ResultOfMethodCallIgnored"})
 public class PackDecompiler {
     private File minecraftJar;
     private HashMap<String, String> fileMap = new HashMap<>();
@@ -24,7 +24,7 @@ public class PackDecompiler {
     private int readLength = 0;
     private File minecraftPath;
     private String version;
-    private boolean over1 = false;
+    private byte overUncompress = 0;
     private boolean over2 = false;
     private boolean stop=false;
     private String mainVersion;
@@ -49,6 +49,22 @@ public class PackDecompiler {
         reachException = true;
     }
     
+    
+    public PackDecompiler(File minecraftPath,File minecraftJar, String version, String putPath) {
+        try {
+            this.minecraftPath = minecraftPath;
+            this.version = version;
+            this.putPath = putPath;
+            this.minecraftJar = minecraftJar;
+            JarDirect = true;
+            System.out.println("Path pass:" + "\"" + minecraftPath.getAbsolutePath() + "\"");
+            String[] jsonVersion = version.split("\\.");
+            mainVersion = jsonVersion[0] + "." + jsonVersion[1];
+        } catch (Exception e) {
+            reachException();
+            e.printStackTrace();
+        }
+    }
     
     public PackDecompiler(File minecraftPath, String version, String putPath) {
         try {
@@ -83,11 +99,7 @@ public class PackDecompiler {
 
     public void cancel() {
         progress = 0;
-        List<Thread> threads = this.getThreads();
-        for (Thread thread : threads) {
-            stop=true;
-//            thread.stop();
-        }
+        stop=true;
         System.out.println("canceled");
     }
     public void pause() {
@@ -127,12 +139,12 @@ public class PackDecompiler {
         }
         if ((!jar) && libraries) {
             progress = 100;
-            over1 = true;
+            overUncompress = 5;
         }
     }
     
-    public boolean isNotOver() {
-        return !over1 || !over2;
+    public boolean isOver() {
+        return ((overUncompress==5) && over2);
     }
     
     public void zipUncompress(String inputFile, String destDirPath) throws Exception {
@@ -160,12 +172,10 @@ public class PackDecompiler {
                     path = path.replace("/", "\\");
                     File targetFile = new File(destDirPath + "\\" + path);
                     if (!targetFile.getParentFile().exists()) {
-                        boolean result = targetFile.getParentFile().mkdirs();
-//                        System.out.println("mkdirs() succeed?:"+result);
+                        targetFile.getParentFile().mkdirs();
                     }
                     if (!targetFile.exists()) {
-                        boolean result = targetFile.createNewFile();
-//                        System.out.println("createNewFile() succeed?:"+result);
+                        targetFile.createNewFile();
                         InputStream is = zipFile.getInputStream(entry);
                         FileOutputStream fos = new FileOutputStream(targetFile);
                         int len;
@@ -179,7 +189,7 @@ public class PackDecompiler {
                 }
             }
         }
-        over1=true;
+        overUncompress++;
     }
     
     public void setProgressPane(ProgressPane progressPane) {
@@ -210,12 +220,12 @@ public class PackDecompiler {
                     }
                     progressPane.tip("");
                 }).start();
-                System.out.println("Read information done");
+                System.out.println(version+":Read information done");
                 indexLength = fileMap.size();
-                System.out.println("size:" + indexLength);
+                System.out.println(version+"MapSize:" + indexLength);
                 filesDirs(objects);
                 over2 = true;
-                System.out.println("Hash over");
+                System.out.println(version+":Hash over");
             } catch (Exception e) {
                 reachException();
                 e.printStackTrace();
@@ -240,10 +250,8 @@ public class PackDecompiler {
                         progress = readLength * 100 / indexLength;
 
                         File put = new File(putPath + "\\" + fileMap.get(file.getName()).replace(':', '\\'));
-                        boolean result = put.getParentFile().mkdirs();
-//                        System.out.println("mkdirs() succeed?:"+result);
+                        put.getParentFile().mkdirs();
                         FileUtils.copyFile(file, put);
-                        //copyFile(file,put);
                     }
                 } catch (IOException e) {
                     reachException();

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.MeshView?>
 
 <fx:root type="Pane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-        <FlowPane fx:id="picturesPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onScroll="#zoomSize" prefWrapLength="0.0" style="-fx-border-color: rgb(255,255,255);" />
         <MeshView fx:id="modelView" />
    </children>
 </fx:root>

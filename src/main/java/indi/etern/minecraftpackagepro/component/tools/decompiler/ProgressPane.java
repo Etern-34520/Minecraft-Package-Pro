@@ -34,9 +34,11 @@ public class ProgressPane extends VBox {
     boolean paused = false;
     String pauseImage1Path;
     String pauseImage2Path;
+    boolean showProgress = true;
     public void onlyIndeterminateProgress(){
         progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
     }
+    
     ProgressPane(PackDecompiler packDecompiler, String version) {
         try {
             FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
@@ -56,11 +58,10 @@ public class ProgressPane extends VBox {
             TilePane.setMargin(this,new Insets(20,0,0,20));
             VBox.setVgrow(this, Priority.ALWAYS);
             VBox.setMargin(this,new Insets(8));
-//            startButton.setDisable(true);
-//            tips.setText("正在反混淆中...");
             Thread flasher = new Thread(() -> {
-                while (packDecompiler.isNotOver()) {
+                while (!packDecompiler.isOver()) {
                     try {
+                        //noinspection BusyWait
                         Thread.sleep(10);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -69,22 +70,13 @@ public class ProgressPane extends VBox {
                         tip("遇到错误");
                         break;
                     }
-                    if (aBoolean) {
+                    if (showProgress) {
                         progressBar.setProgress(packDecompiler.getProgress() / 100.0);
                     }
-                    if (packDecompiler.getProgress() == 100&aBoolean) {
-                        aBoolean = false;
+                    if (!showProgress&&packDecompiler.getProgress() == 100) {
+                        showProgress = false;
                         Platform.runLater(() -> {
                             tip("解压缩中");
-                            progressBar.setProgress(0);
-                            //tips.setText("解压缩jar中，这可能需要几分钟...")
-                        });
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        Platform.runLater(() ->{
                             progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
                         });
                     }
@@ -92,6 +84,7 @@ public class ProgressPane extends VBox {
                 Platform.runLater(() -> {
                     pauseButton.setDisable(true);
                     cancelButton.setDisable(true);
+                    progressBar.setProgress(0);
                 });
                 if (!packDecompiler.isStop()) tip("完成");
                 try {
@@ -100,7 +93,10 @@ public class ProgressPane extends VBox {
                     throw new RuntimeException(e);
                 }
                 assert this.getParent() instanceof VBox;
-                Platform.runLater(() -> ((VBox) this.getParent()).getChildren().remove(this));
+                try {
+                    Platform.runLater(() -> ((VBox) this.getParent()).getChildren().remove(this));
+                } catch (NullPointerException ignored){
+                }
             });
             flasher.start();
             packDecompiler.start();
@@ -108,7 +104,6 @@ public class ProgressPane extends VBox {
             e.printStackTrace();
         }
     }
-    
     @FXML
     void cancel(MouseEvent event) {
         packDecompiler.cancel();
@@ -123,7 +118,6 @@ public class ProgressPane extends VBox {
             Platform.runLater(() -> ((VBox) finalPane.getParent()).getChildren().remove(finalPane));
         }).start();
     }
-    boolean aBoolean = true;
     @FXML
     void pause() {
         if (!paused) {

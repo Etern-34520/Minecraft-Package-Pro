@@ -90,38 +90,32 @@ public class WorkBench extends GridPane {
             buttonBar = topLeftBar;
             splitPane = topPane;
             group = topLeftGroup;
-            //index = 0;
+            index = 0;
         } else if (way == Way.TOP_RIGHT){
             buttonBar = topRightBar;
             splitPane = topPane;
             group = topRightGroup;
-            if (!splitPane.getChildrenUnmodifiable().isEmpty()){
-                index=1;
-            }
+            index=1;
         } else if (way == Way.LEFT_TOP) {
             buttonBar = leftTopBar;
             splitPane = leftPane;
             group = leftTopGroup;
-            //index=0;
+            index=0;
         } else if (way == Way.RIGHT_TOP){
             buttonBar = rightTopBar;
             splitPane = rightPane;
             group = rightTopGroup;
-            //index=0;
+            index=0;
         } else if (way == Way.LEFT_BOTTOM) {
             buttonBar = leftBottomBar;
             splitPane = leftPane;
             group = leftBottomGroup;
-            if (!splitPane.getChildrenUnmodifiable().isEmpty()){
-                index=1;
-            }
+            index=1;
         } else if (way == Way.RIGHT_BOTTOM){
             buttonBar = rightBottomBar;
             splitPane = rightPane;
             group = rightBottomGroup;
-            if (!splitPane.getChildrenUnmodifiable().isEmpty()){
-                index=1;
-            }
+            index=1;
         } else if (way == Way.BOTTOM_LEFT) {
             buttonBar = bottomLeftBar;
             splitPane = bottomPane;
@@ -131,9 +125,7 @@ public class WorkBench extends GridPane {
             buttonBar = bottomRightBar;
             splitPane = bottomPane;
             group = bottomRightGroup;
-            if (!splitPane.getChildrenUnmodifiable().isEmpty()){
-                index=1;
-            }
+            index=1;
         } else {
             throw new EnumConstantNotPresentException(Way.class,"must be ways");
         }
@@ -143,13 +135,14 @@ public class WorkBench extends GridPane {
         buttonBar.getChildren().add(addButton);
         addButton.setSelected(true);
         addButton.setStyle("-fx-font-size: 10;-fx-background-color :rgb(30,30,30);border_hover_selected_color: rgb(45,47,48)");
-        int finalIndex = index;
+        final int[] finalIndex = new int[1];
+        finalIndex[0] = index;
         addButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             SplitPane splitPane1 = parents.get(window);
             if (addButton.isSelected()){
                 addButton.setStyle("-fx-font-size: 10;-fx-background-color :rgb(30,30,30);border_hover_selected_color: rgb(45,47,48)");
                 try {
-                    splitPane1.getItems().add(finalIndex,window);
+                    splitPane1.getItems().add(finalIndex[0],window);
                 } catch (Exception e) {
                     splitPane1.getItems().add(window);
                 }

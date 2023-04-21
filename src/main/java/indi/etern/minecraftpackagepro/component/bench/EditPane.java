@@ -1,6 +1,7 @@
 package indi.etern.minecraftpackagepro.component.bench;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
@@ -10,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.MeshView;
 
@@ -18,18 +18,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditPane extends Pane {
     @FXML
-    FlowPane picturesPane;
-    @FXML
     MeshView modelView;
     Canvas canvas;
-    double size = 100;
+    double imageDrawWidth = 100;
     WritableImage canvasImage;
     Tab tab;
     
@@ -39,7 +34,6 @@ public class EditPane extends Pane {
             loader.setRoot(this);
             loader.setController(this);
             loader.load();
-            picturesPane.setMinSize(20,20);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,9 +44,6 @@ public class EditPane extends Pane {
         return modelView;
     }
     
-    public FlowPane getPictureView() {
-        return picturesPane;
-    }
     
     @FXML
     public void zoomSize(ScrollEvent event) {
@@ -62,14 +53,14 @@ public class EditPane extends Pane {
         }
         double newWidth = canvas.getWidth()*(1+zoomedDeltaY/100);
         double newHeight = canvas.getHeight()*(1+zoomedDeltaY/100);
-        if (newWidth<picturesPane.getMinWidth()|newHeight<picturesPane.getMinHeight()){
-            return;
-        }
-        picturesPane.setLayoutX(picturesPane.getLayoutX() - (newWidth-canvas.getWidth())/2);
-        picturesPane.setLayoutY(picturesPane.getLayoutY() - (newHeight-canvas.getHeight())/2);
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-        size += zoomedDeltaY;
+//        if (newWidth<picturesPane.getMinWidth()|newHeight<picturesPane.getMinHeight()){
+//            return;
+//        }
+//        picturesPane.setLayoutX(picturesPane.getLayoutX() - (newWidth-canvas.getWidth())/2);
+//        picturesPane.setLayoutY(picturesPane.getLayoutY() - (newHeight-canvas.getHeight())/2);
+//        canvas.setWidth(newWidth);
+//        canvas.setHeight(newHeight);
+        imageDrawWidth += zoomedDeltaY;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setImageSmoothing(false);
         gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -79,18 +70,13 @@ public class EditPane extends Pane {
     public void uploadPicture(File file) {
         if (file != null && file.isFile()) {
             try {
-                FileInputStream input;
-                input = new FileInputStream(file);
+                FileInputStream input = new FileInputStream(file);
                 Image image = new Image(input);
                 String name = file.getName();
                 String suffix = null;
                 for (String i : name.split("\\.")) suffix = i;
 				if (name.split("\\.").length==1) suffix="null";
-                List<String> allowedSuffix = new ArrayList<>();
-				allowedSuffix.add("jpg");
-				allowedSuffix.add("png");
-				allowedSuffix.add("bmp");
-				allowedSuffix.add("gif");
+                String[] allowedSuffix = new String[]{"jpg","png","bmp","gif"};
 				boolean unSupport = true;
 				for (String s : allowedSuffix) {
 					assert suffix != null;
@@ -102,15 +88,20 @@ public class EditPane extends Pane {
 				if (unSupport) System.out.println("not support suffix:"+suffix);
 				else {
                     WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
-                    Canvas canvas = new Canvas(size, size * image.getHeight() / image.getWidth());
-                    picturesPane.getChildren().add(canvas);
+                    double imageDrawHeight = imageDrawWidth * image.getHeight() / image.getWidth();
+                    Canvas canvas = new Canvas(imageDrawWidth, imageDrawHeight);
+                    this.getChildren().add(canvas);
+                    canvas.widthProperty().bind(this.widthProperty());
+                    canvas.heightProperty().bind(this.heightProperty());
                     GraphicsContext gc = canvas.getGraphicsContext2D();
                     gc.setImageSmoothing(false);
-                    Platform.runLater(() -> gc.drawImage(writableImage, 0, 0, size, size * image.getHeight() / image.getWidth()));
+                    Platform.runLater(() -> gc.drawImage(writableImage,
+                            (getWidth()-imageDrawWidth)/2, (getHeight()-imageDrawHeight)/2,
+                            imageDrawWidth, imageDrawHeight));
                     final double[] cx = new double[1];
                     final double[] cy = new double[1];
                     AtomicBoolean showMenu = new AtomicBoolean(false);
-                    picturesPane.setOnMousePressed(event -> {
+                    canvas.setOnMousePressed(event -> {
                         if(event.getButton().equals(MouseButton.SECONDARY)){
                             showMenu.set(true);
                             cx[0] = event.getX();
@@ -128,19 +119,24 @@ public class EditPane extends Pane {
                             }).start();
                         }
                     });
-                    picturesPane.setOnMouseDragged(event -> {
+                    canvas.setOnMouseDragged(event -> {
                         if(event.getButton().equals(MouseButton.SECONDARY)) {
                             showMenu.set(false);
-                            double originalX = picturesPane.getLayoutX();
-                            double originalY = picturesPane.getLayoutY();
+//                            double originalX = picturesPane.getLayoutX();
+//                            double originalY = picturesPane.getLayoutY();
                             double moveX = event.getX();
                             double moveY = event.getY();
-                            double y = originalY + moveY - cy[0];
-                            double x = originalX + moveX - cx[0];
-                            picturesPane.relocate(x, y);
-                            System.out.println(x + "," + y);
+//                            double y = originalY + moveY - cy[0];
+//                            double x = originalX + moveX - cx[0];
+//                            picturesPane.relocate(x, y);
+//                            System.out.println(x + "," + y);
                         }
                     });
+                    ChangeListener<Number> sizeChangedListener = (observableValue, number, t1) -> {
+                    
+                    };
+                    canvas.widthProperty().addListener(sizeChangedListener);
+                    canvas.heightProperty().addListener(sizeChangedListener);
                     this.canvas = canvas;
                     canvasImage = writableImage;
 				}
