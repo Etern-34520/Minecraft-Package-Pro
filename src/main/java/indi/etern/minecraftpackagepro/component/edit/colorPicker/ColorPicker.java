@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ColorPicker extends GridPane{
-	boolean cvs = true;//colorValueSet
+	boolean cvs = true;//syncSliderAndTextValue
 	@FXML
 	private Polygon colorPointer;
 	@FXML
@@ -84,12 +84,12 @@ public class ColorPicker extends GridPane{
 				}
 					((Slider) lookup("#slider"+textField.getId().charAt(4))).setValue(Integer.parseInt(t));
 					//sliderRed.setValue(Integer.valueOf(r).intValue());
-					colorPosition();
+					positioningAccordingToCurrentColor();
 				});
 		}
 	}
 	
-	private void colorPosition() {
+	private void positioningAccordingToCurrentColor() {
 		double a = 140;
 		double border = 0.5;
 		int r = (int) sliderR.getValue();
@@ -100,16 +100,16 @@ public class ColorPicker extends GridPane{
 		double s = color.getSaturation();
 		double v = color.getBrightness();
 		colorPane.setRotate(-h);
-		dotX(s * (a - 2 * border) + border);
-		dotY(a - v * (a - 2 * border) - border);
+		setDotX(s * (a - 2 * border) + border);
+		setDotY(a - v * (a - 2 * border) - border);
 		cvs = false;
 		basicColorChange(null);
 		cvs = true;
 		alphaBackground1.setOpacity((100-sliderA.getValue())/100.0);
-		setDotStatus(r, g, b, v);
+		setDotPositionOfColor(r, g, b, v);
 	}
 	
-	private void setDotStatus(int r, int g, int b, double v) {
+	private void setDotPositionOfColor(int r, int g, int b, double v) {
 		if (alphaBackground1.getOpacity() < 0.5) {
 			dotLight.setVisible(true);
 			dotDark.setVisible(false);
@@ -127,7 +127,7 @@ public class ColorPicker extends GridPane{
 			dotLight.setVisible(false);
 			dotDark.setVisible(true);
 		}
-		colorPlate.colorSet(r, g, b, sliderA.getValue());
+		colorPlate.setSelectedButtonColor(r, g, b, sliderA.getValue());
 	}
 	
 	@FXML
@@ -200,10 +200,10 @@ public class ColorPicker extends GridPane{
 			b = (int) (-255 * ro / 60);
 		}
 		colorBottom.setFill(Color.rgb(r, g, b));
-		if (cvs) colorValueSet();
+		if (cvs) syncSliderAndTextValue();
 	}
 
-	private void colorValueSet() {
+	private void syncSliderAndTextValue() {
 		double dx = dotLight.getLayoutX();
 		double dy = dotLight.getLayoutY();
 		double a = 140;
@@ -231,21 +231,21 @@ public class ColorPicker extends GridPane{
 		textR.setText(Integer.toString(r));
 		textG.setText(Integer.toString(g));
 		textB.setText(Integer.toString(b));
-		setDotStatus(r, g, b, v);
+		setDotPositionOfColor(r, g, b, v);
 	}
 
-	private void dotX(double x) {
+	private void setDotX(double x) {
 		dotLight.setLayoutX(x);
 		dotDark.setLayoutX(x);
 	}
 
-	private void dotY(double y) {
+	private void setDotY(double y) {
 		dotLight.setLayoutY(y);
 		dotDark.setLayoutY(y);
 	}
 	
 	@FXML
-	public void dotSet(MouseEvent e) {
+	public void dotPositioning(MouseEvent e) {
 		double ex = e.getX();// 鼠标X位置
 		double ey = e.getY();// 鼠标Y位置
 		double a = colorTop.getWidth();
@@ -257,24 +257,24 @@ public class ColorPicker extends GridPane{
 		double addX = 0.5;
 		double addY = 0.5;
 		if (ex + addX < 0 + border) {
-			dotX(0 + border);
-			dotY(ey + addY);
+			setDotX(0 + border);
+			setDotY(ey + addY);
 			left = true;
 
 		}
 		if (ex + addX > a - border) {
-			dotX(a - border);
-			dotY(ey + addY);
+			setDotX(a - border);
+			setDotY(ey + addY);
 			right = true;
 		}
 		if (ey + addY < 0 + border) {
-			dotX(ex + addX);
-			dotY(0 + border);
+			setDotX(ex + addX);
+			setDotY(0 + border);
 			top = true;
 		}
 		if (ey + addY > a - border) {
-			dotX(ex + addX);
-			dotY(a - border);
+			setDotX(ex + addX);
+			setDotY(a - border);
 			bottom = true;
 		}
 		// 这是一段很有意思的测试代码，不用管它
@@ -288,22 +288,22 @@ public class ColorPicker extends GridPane{
 		 * System.out.println("  -----"+bottom+"-----");
 		 */
 		if (left && top) {
-			dotX(0 + border);
-			dotY(0 + border);
+			setDotX(0 + border);
+			setDotY(0 + border);
 		} else if (left && bottom) {
-			dotX(0 + border);
-			dotY(a - border);
+			setDotX(0 + border);
+			setDotY(a - border);
 		} else if (right && top) {
-			dotX(a - border);
-			dotY(0 + border);
+			setDotX(a - border);
+			setDotY(0 + border);
 		} else if (right && bottom) {
-			dotX(a - border);
-			dotY(a - border);
+			setDotX(a - border);
+			setDotY(a - border);
 		} else if (!(top | bottom | left | right)) {
-			dotX(ex + addX);
-			dotY(ey + addY);
+			setDotX(ex + addX);
+			setDotY(ey + addY);
 		}
-		colorValueSet();
+		syncSliderAndTextValue();
 		//这一段是为了判断是否显示鼠标
 		if(showMouse) colorTop.setCursor(Cursor.CROSSHAIR);
 		else colorTop.setCursor(Cursor.NONE);
@@ -315,7 +315,7 @@ public class ColorPicker extends GridPane{
 		TextField textField = (TextField) this.lookup("#"+"text"+e.getSource().toString().charAt(16));
 		int value = ((int) slider.getValue());
 		textField.setText(String.valueOf(value));
-		colorPosition();
+		positioningAccordingToCurrentColor();
 	}
 	
 	@FXML
@@ -336,12 +336,12 @@ public class ColorPicker extends GridPane{
 				}
 			} catch (NumberFormatException ignored) {
 			}
-			colorPosition();
+			positioningAccordingToCurrentColor();
 		}
 		if (text.equals("00")) {
 			textField.setText("0");
 		}
-		colorPosition();
+		positioningAccordingToCurrentColor();
 	}
 	public void setColor(int r, int g, int b, int a) {
 		sliderR.setValue(r);
@@ -352,7 +352,7 @@ public class ColorPicker extends GridPane{
 		textG.setText(Integer.toString(g));
 		textB.setText(Integer.toString(b));
 		textA.setText(Integer.toString(a));
-		colorPosition();
+		positioningAccordingToCurrentColor();
 	}
 	@FXML
 	private void pointerCursorHandClose(){
@@ -364,7 +364,7 @@ public class ColorPicker extends GridPane{
 	}
 	@FXML
 	private void hideMouse(MouseEvent event){
-		dotSet(event);
+		dotPositioning(event);
 		colorTop.setCursor(Cursor.NONE);
 		showMouse=false;
 	}
@@ -379,5 +379,9 @@ public class ColorPicker extends GridPane{
 	@FXML
 	private void showMouse(MouseEvent event){
 		showMouse=true;
+	}
+	
+	public Color getColor() {
+		return new Color(sliderR.getValue()*1000/255/1000.0, sliderG.getValue()*1000/255/1000.0, sliderB.getValue()*1000/255/1000.0, sliderA.getValue()*0.01);
 	}
 }

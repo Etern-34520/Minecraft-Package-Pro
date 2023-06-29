@@ -1,7 +1,7 @@
 package indi.etern.minecraftpackagepro.component.bench;
 
+import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
@@ -27,7 +27,7 @@ public class EditPane extends Pane {
     double imageDrawWidth = 100;
     WritableImage canvasImage;
     Tab tab;
-    
+    final double[] location = new double[4];
     public EditPane() {
         try {
             FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
@@ -39,20 +39,50 @@ public class EditPane extends Pane {
         }
     }
     
+    private void drawAlphaBackground(){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        if (location[2]==0|location[3]==0){
+            return;
+        }
+        double size = (Math.max(location[2], location[3]))/32;
+        boolean isWhite;
+        int x = 0;
+        for (int i = (int) location[0]; i <= location[0]+location[2]; i+=size) {
+            x++;
+            isWhite = x % 2 == 0;
+            for (int j = (int) location[1]; j <= location[1]+location[3]; j+=size) {
+                if (isWhite){
+                    gc.setFill(javafx.scene.paint.Color.WHITE);
+                    isWhite = false;
+                } else {
+                    gc.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                    isWhite = true;
+                }
+                gc.fillRect(i,j,size,size);
+            }
+        }
+        gc.clearRect(0,0,location[0],canvas.getHeight());
+        gc.clearRect(0,0,canvas.getWidth(),location[1]);
+        gc.clearRect(location[0]+location[2],0,canvas.getWidth()-location[0]-location[2],canvas.getHeight());
+        gc.clearRect(0,location[1]+location[3],canvas.getWidth(),canvas.getHeight()-location[1]-location[3]);
+    }
     
     public MeshView getMeshView() {
         return modelView;
     }
     
-    
-    @FXML
     public void zoomSize(ScrollEvent event) {
         double zoomedDeltaY = event.getDeltaY()/2;
+        double mousePointX = event.getX();
+        double mousePointY = event.getY();
         if (event.isAltDown()){
             zoomedDeltaY *= 4;
         }
-        double newWidth = canvas.getWidth()*(1+zoomedDeltaY/100);
-        double newHeight = canvas.getHeight()*(1+zoomedDeltaY/100);
+        double newWidth = location[2]*(1+zoomedDeltaY/100);
+        double newHeight = location[3]*(1+zoomedDeltaY/100);
+        double newX = canvas.getLayoutX() - (newWidth-canvas.getWidth())*(mousePointX/canvas.getWidth());
+        double newY = canvas.getLayoutY() - (newHeight-canvas.getHeight())*(mousePointY/canvas.getHeight());
 //        if (newWidth<picturesPane.getMinWidth()|newHeight<picturesPane.getMinHeight()){
 //            return;
 //        }
@@ -60,13 +90,16 @@ public class EditPane extends Pane {
 //        picturesPane.setLayoutY(picturesPane.getLayoutY() - (newHeight-canvas.getHeight())/2);
 //        canvas.setWidth(newWidth);
 //        canvas.setHeight(newHeight);
-        imageDrawWidth += zoomedDeltaY;
+        imageDrawWidth = newWidth;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setImageSmoothing(false);
-        gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
-        gc.drawImage(canvasImage, 0, 0, newWidth, newHeight);
+        location[0] = newX;
+        location[1] = newY;
+        location[2] = newWidth;
+        location[3] = newHeight;
+        drawAlphaBackground();
+        gc.drawImage(canvasImage, newX, newY, newWidth, newHeight);
     }
-    
     public void uploadPicture(File file) {
         if (file != null && file.isFile()) {
             try {
@@ -85,16 +118,24 @@ public class EditPane extends Pane {
 						unSupport = false;
 					}
 				}
-				if (unSupport) System.out.println("not support suffix:"+suffix);
+				if (unSupport) System.out.println("["+ WorkBenchLauncher.getTimeSinceStart()+"s]not support suffix:"+suffix);
 				else {
                     WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
                     double imageDrawHeight = imageDrawWidth * image.getHeight() / image.getWidth();
                     Canvas canvas = new Canvas(imageDrawWidth, imageDrawHeight);
                     this.getChildren().add(canvas);
+                    this.widthProperty().addListener((observable, oldValue, newValue) -> {
+                        reDrawOriginalSize();
+                    });
                     canvas.widthProperty().bind(this.widthProperty());
                     canvas.heightProperty().bind(this.heightProperty());
+                    canvas.setOnScroll(this::zoomSize);
                     GraphicsContext gc = canvas.getGraphicsContext2D();
                     gc.setImageSmoothing(false);
+                    location[0] = (getWidth()-imageDrawWidth)/2;
+                    location[1] = (getHeight()-imageDrawHeight)/2;
+                    location[2] = imageDrawWidth;
+                    location[3] = imageDrawHeight;
                     Platform.runLater(() -> gc.drawImage(writableImage,
                             (getWidth()-imageDrawWidth)/2, (getHeight()-imageDrawHeight)/2,
                             imageDrawWidth, imageDrawHeight));
@@ -122,21 +163,17 @@ public class EditPane extends Pane {
                     canvas.setOnMouseDragged(event -> {
                         if(event.getButton().equals(MouseButton.SECONDARY)) {
                             showMenu.set(false);
-//                            double originalX = picturesPane.getLayoutX();
-//                            double originalY = picturesPane.getLayoutY();
                             double moveX = event.getX();
                             double moveY = event.getY();
-//                            double y = originalY + moveY - cy[0];
-//                            double x = originalX + moveX - cx[0];
-//                            picturesPane.relocate(x, y);
-//                            System.out.println(x + "," + y);
+                            location[0] = location[0] + moveX - cx[0];
+                            location[1] = location[1] + moveY - cy[0];
+                            final GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
+                            drawAlphaBackground();
+//                            graphicsContext2D.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+                            graphicsContext2D.drawImage(canvasImage,
+                                    location[0],location[1],location[2],location[3]);
                         }
                     });
-                    ChangeListener<Number> sizeChangedListener = (observableValue, number, t1) -> {
-                    
-                    };
-                    canvas.widthProperty().addListener(sizeChangedListener);
-                    canvas.heightProperty().addListener(sizeChangedListener);
                     this.canvas = canvas;
                     canvasImage = writableImage;
 				}
@@ -156,4 +193,17 @@ public class EditPane extends Pane {
 		public Tab toTab() {
 			return tab;
 		}
+    
+    public void reDrawOriginalSize() {
+        double imageDrawHeight = imageDrawWidth * canvasImage.getHeight() / canvasImage.getWidth();
+        location[0] = (getWidth()-imageDrawWidth)/2;
+        location[1] = (getHeight()-imageDrawHeight)/2;
+        location[2] = imageDrawWidth;
+        location[3] = imageDrawHeight;
+        final GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
+        drawAlphaBackground();
+//        graphicsContext2D.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        graphicsContext2D.drawImage(canvasImage,
+                location[0],location[1],location[2],location[3]);
+    }
 }

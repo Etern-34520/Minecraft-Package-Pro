@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Window extends GridPane{
-	public static final Integer AUTOARRENGE = null;
 	double x;
 	double y;
 	double sx;
@@ -75,6 +73,10 @@ public class Window extends GridPane{
 			panes.add(paneS);
 			panes.add(paneSW);
 			this.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+			if (node instanceof Pane) {
+				getRowConstraints().get(2).setMinHeight(((Pane) node).getMinHeight());
+				getColumnConstraints().get(1).setMinWidth(((Pane) node).getMinWidth());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -123,8 +125,8 @@ public class Window extends GridPane{
 		this.setStyle("-fx-border-color:rgb(0,120,215)");
 	}*/
 	public void pin(){
-		for (int i = 0; i < panes.size(); i++) {
-			panes.get(i).setCursor(Cursor.DEFAULT);
+		for (Pane pane : panes) {
+			pane.setCursor(Cursor.DEFAULT);
 		}
 	}
 	public void  unPin(){

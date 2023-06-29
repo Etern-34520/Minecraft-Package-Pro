@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="300.0" type="GridPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="450.0" minWidth="300.0" prefHeight="450.0" prefWidth="300.0" type="GridPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="270.0" />
     <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" prefWidth="30.0" />
@@ -185,7 +185,7 @@
                         <Image url="@dotDark.png" />
                      </image>
                   </ImageView>
-                  <Rectangle fx:id="colorTop" fill="#ffffff00" height="140.0" onMouseClicked="#dotSet" onMouseDragged="#dotSet" onMouseEntered="#decideToHideMouse" onMouseExited="#showMouse" onMousePressed="#hideMouse" onMouseReleased="#showMouse" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="140.0">
+                  <Rectangle fx:id="colorTop" fill="#ffffff00" height="140.0" onMouseClicked="#dotPositioning" onMouseDragged="#dotPositioning" onMouseEntered="#decideToHideMouse" onMouseExited="#showMouse" onMousePressed="#hideMouse" onMouseReleased="#showMouse" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="140.0">
                      <cursor>
                         <Cursor fx:constant="CROSSHAIR" />
                      </cursor>

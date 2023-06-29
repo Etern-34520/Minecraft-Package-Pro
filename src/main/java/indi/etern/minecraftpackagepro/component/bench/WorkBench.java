@@ -56,8 +56,13 @@ public class WorkBench extends GridPane {
     ToggleGroup rightBottomGroup = new ToggleGroup();
     ToggleGroup bottomLeftGroup = new ToggleGroup();
     ToggleGroup bottomRightGroup = new ToggleGroup();
-
     HashMap<Node,SplitPane> parents = new HashMap<>();
+    
+    public List<Node> getComponents() {
+        return components;
+    }
+    
+    private final List<Node> components = new ArrayList<>();
     public WorkBench(){
         try {
             FXMLLoader loader = new FXMLLoader(new URL(getClass().getResource("")+"resources/"+getClass().getSimpleName()+".fxml"));
@@ -77,6 +82,8 @@ public class WorkBench extends GridPane {
     }
 
     public void add(Node node, Way way, String name){
+        components.add(node);
+        node.setCache(true);
         HBox buttonBar;
         SplitPane splitPane;
         ToggleButton addButton = new ToggleButton(name);
@@ -130,7 +137,11 @@ public class WorkBench extends GridPane {
             throw new EnumConstantNotPresentException(Way.class,"must be ways");
         }
         parents.put(window,splitPane);
-        splitPane.getItems().add(index,window);
+        try {
+            splitPane.getItems().add(index,window);
+        } catch (IndexOutOfBoundsException e) {
+            splitPane.getItems().add(0,window);
+        }
         addButton.setToggleGroup(group);
         buttonBar.getChildren().add(addButton);
         addButton.setSelected(true);

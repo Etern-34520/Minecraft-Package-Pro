@@ -1,5 +1,7 @@
 package indi.etern.minecraftpackagepro.dataBUS;
 
+import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -17,7 +19,7 @@ public class Setting {
                 e.printStackTrace();
             }
         }
-        System.out.println(config.getAbsolutePath());
+        System.out.println("["+ WorkBenchLauncher.getTimeSinceStart()+ "s][info][setting] read options from: \"" + config.getAbsolutePath() + "\"");
         if (config.exists()&&config.canRead()&& config.canWrite()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(CONFIG_PATH))) {
                 settingMap = (HashMap<Object, Object>) ois.readObject();
@@ -53,6 +55,40 @@ public class Setting {
     //—————————————————————————————————————————————————————————————————
     public Object get(Object key){
         return settingMap.get(key);
+    }
+    public void flush(){
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("options.config"))) {
+            oos.writeObject(settingMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public int getInt(Object key) throws ClassCastException{
+        return (int)settingMap.get(key);
+    }
+    public double getDouble(Object key) throws ClassCastException{
+        return (double)settingMap.get(key);
+    }
+    public float getFloat(Object key) throws ClassCastException{
+        return (float)settingMap.get(key);
+    }
+    public boolean getBoolean(Object key) throws ClassCastException{
+        return (boolean)settingMap.get(key);
+    }
+    public String getString(Object key) throws ClassCastException{
+        return (String)settingMap.get(key);
+    }
+    public long getLong(Object key) throws ClassCastException{
+        return (long)settingMap.get(key);
+    }
+    public byte getByte(Object key) throws ClassCastException{
+        return (byte)settingMap.get(key);
+    }
+    public short getShort(Object key) throws ClassCastException{
+        return (short)settingMap.get(key);
+    }
+    public char getChar(Object key) throws ClassCastException{
+        return (char)settingMap.get(key);
     }
     public void put(Object key,Object value){settingMap.put(key, value);}
     

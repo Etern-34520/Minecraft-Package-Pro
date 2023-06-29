@@ -1,6 +1,6 @@
 package indi.etern.minecraftpackagepro.component.tools.decompiler;
 
-import indi.etern.minecraftpackagepro.io.PackDecompiler;
+import indi.etern.minecraftpackagepro.io.originalPackDecompiler.PackDecompiler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
