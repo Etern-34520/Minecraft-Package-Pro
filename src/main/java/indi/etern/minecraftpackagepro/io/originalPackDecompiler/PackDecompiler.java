@@ -27,6 +27,7 @@ public class PackDecompiler {
     private File minecraftPath;
     private String version;
     private byte overUncompress = 0;
+    private boolean over1 = false;
     private boolean over2 = false;
     private boolean stop = false;
     private String mainVersion;
@@ -35,7 +36,7 @@ public class PackDecompiler {
     private boolean JarDirect;
     private ProgressPane progressPane;
     private TaskPane taskPane;
-    private List<Exception> exceptions;
+    private final List<Exception> exceptions = new ArrayList<>();
     
     public List<Thread> getThreads() {
         return threads;
@@ -145,12 +146,14 @@ public class PackDecompiler {
         }
         if ((!jar) && libraries) {
             progress = 100;
-            overUncompress = 5;
+//            overUncompress = 5;
+            over1 = true;
         }
     }
     
     public boolean isOver() {
-        return ((overUncompress==5) && over2);
+//        return ((overUncompress==5) && over2);
+        return over1 && over2;
     }
     
     public List<Exception> getExceptions() {
@@ -200,7 +203,8 @@ public class PackDecompiler {
                 }
             }
         }
-        overUncompress++;
+//        overUncompress++;
+        over1 = true;
     }
     
     public void setProgressPane(ProgressPane progressPane) {
@@ -240,7 +244,7 @@ public class PackDecompiler {
 //                    progressPane.tip("");
                     taskPane.setTip("反混淆中", -1);
                 }).start();
-                System.out.println(version+":Read information done");
+                System.out.println(version+":getCubesFrom information done");
                 indexLength = fileMap.size();
                 System.out.println(version+"MapSize:" + indexLength);
                 filesDirs(objects);
@@ -289,7 +293,7 @@ public class PackDecompiler {
         public void run() {
             System.out.println("Unzip Minecraft jar");
             try {
-                for (int i = 0; i < 5; i++) {
+//                for (int i = 0; i < 5; i++) {
                     new Thread(() -> {
                         try {
                             if (JarDirect) {
@@ -303,7 +307,7 @@ public class PackDecompiler {
                             exceptions.add(e);
                         }
                     }).start();
-                }
+//                }
             } catch (Exception e) {
                 reachException();
                 e.printStackTrace();

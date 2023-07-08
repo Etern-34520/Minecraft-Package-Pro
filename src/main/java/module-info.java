@@ -14,6 +14,9 @@ module indi.etern.minecraftpackagepro.minecraftpackagepro {
     opens indi.etern.minecraftpackagepro.component.edit.colorPicker to javafx.fxml;
     opens indi.etern.minecraftpackagepro.component.edit.colorPlate to javafx.fxml;
     opens indi.etern.minecraftpackagepro.component.tools.decompiler to javafx.fxml;
-    exports indi.etern.minecraftpackagepro.component.main;
     opens indi.etern.minecraftpackagepro.component.tasks to javafx.fxml;
+    opens indi.etern.minecraftpackagepro.component.view3D to com.google.gson;
+    opens indi.etern.minecraftpackagepro.io.indexScanner to com.google.gson;
+    exports indi.etern.minecraftpackagepro.component.main;
+    opens indi.etern.minecraftpackagepro.dataBUS.model to com.google.gson;
 }

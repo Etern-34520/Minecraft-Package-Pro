@@ -3,7 +3,7 @@ package indi.etern.minecraftpackagepro.io.packTree;
 import indi.etern.minecraftpackagepro.component.bench.EditPane;
 import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
 import indi.etern.minecraftpackagepro.dataBUS.Setting;
-import indi.etern.minecraftpackagepro.io.indexScanner.Cube;
+import indi.etern.minecraftpackagepro.dataBUS.model.Model;
 import indi.etern.minecraftpackagepro.io.indexScanner.IndexScanner;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -24,7 +24,7 @@ import java.util.Objects;
 
 public class FileTree {
     private final tsFile LOADING = new tsFile("loading...");
-    private final TreeItem<tsFile> loading = new TreeItem<>(LOADING);
+    private final TreeItem<tsFile> LOADING_ITEM = new TreeItem<>(LOADING);
 
     public void setRootOfAll(TreeItem<tsFile> rootOfAll) {
         this.rootOfAll = rootOfAll;
@@ -60,9 +60,9 @@ public class FileTree {
                 final TreeItem<tsFile> selectedItem = treeView.getSelectionModel().getSelectedItem();
                 if (selectedItem == null) return;
                 tsFile picture = selectedItem.getValue();
-                List<Cube> cubes = indexScanner.getCubesOf(picture);
-                if (cubes != null) {
-                    System.out.println(cubes);
+                List<Model> models = indexScanner.getModelsOf(picture);
+                if (models != null) {
+                    System.out.println(models);
                 }
                 editPane.uploadPicture(picture);
                 if (editPane.toTab() != null) {
@@ -181,7 +181,7 @@ public class FileTree {
                 indexScanner = new IndexScanner(new File(rootPath));
             } catch (RuntimeException e) {
                 System.out.println("["+ WorkBenchLauncher.getTimeSinceStart()+ "s][warning] index not found: \"" + rootPath + "\"");
-                System.out.println("                | will use default index");
+                System.out.println(                                      "                | will use default index");
                 Setting setting = Setting.getInstance();
                 String templatePackPath = setting.getString("templatePackPath");
                 File templatePack = new File(templatePackPath);
@@ -192,10 +192,10 @@ public class FileTree {
             TreeItem<tsFile> childItem = new TreeItem<>(child);
             root.getChildren().add(childItem);
             if(child.isDirectory()&&child.listFiles()!=null&& Objects.requireNonNull(child.listFiles()).length>0){
-                childItem.getChildren().add(loading);
+                childItem.getChildren().add(LOADING_ITEM);
                 childItem.addEventHandler(TreeItem.branchExpandedEvent(), (EventHandler<TreeItem.TreeModificationEvent<tsFile>>) event -> {
                     TreeItem<tsFile> newRoot=event.getTreeItem();
-                    if (newRoot.getChildren().size()==1&&newRoot.getChildren().get(0).equals(loading)) {
+                    if (newRoot.getChildren().size()==1&&newRoot.getChildren().get(0).equals(LOADING_ITEM)) {
                         newRoot.getChildren().remove(0);
                         create(new tsFile(child.getPath() + "\\"),newRoot);
                     }
@@ -218,7 +218,7 @@ public class FileTree {
         parent.getChildren().addAll(compareList.getAddList());
         parent.getChildren().removeAll(compareList.getRemoveList());
         for (TreeItem<tsFile> child : parent.getChildren()) {
-            if (!child.getChildren().contains(loading)){
+            if (!child.getChildren().contains(LOADING_ITEM)){
                 refreshChildOf(child);
             }
         }

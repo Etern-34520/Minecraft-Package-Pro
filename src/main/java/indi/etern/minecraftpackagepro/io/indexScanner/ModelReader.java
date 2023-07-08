@@ -16,76 +16,83 @@ import java.util.Map;
 public class ModelReader {
     static int t = 0;
     static double[] position = new double[6];
-    private final Cube cube = new Cube();
-    List<Cube> cubes = new ArrayList<>();
+    private Cube_old cubeOld = new Cube_old();
+    List<Cube_old> cubeOlds = new ArrayList<>();
     String lastName;
     File packPath;
     public ModelReader(File packPath) {
         this.packPath = packPath;
     }
     
-    private void eqaqlsName(String name, String information) {
+    private void switchName(String name, String information) {
         switch (name) {
+            case "__comment":
+                break;
             case "elements":
                 break;
             case "from":
+                cubeOlds.add(cubeOld);
+                cubeOld = new Cube_old();
                 break;
             case "to":
+                try {
+                    cubeOld.setFrom(position[0], position[1], position[2]);
+                } catch (IndexOutOfBoundsException ignored) {
+                }
                 break;
             case "faces":
+                try {
+                    cubeOld.setTo(position[3], position[4], position[5]);
+                } catch (IndexOutOfBoundsException ignored) {
+                }
                 break;
             case "texture":
                 break;
             case "parent":
-                cube.setParent(packPath , information);
+                cubeOld.setParent(packPath , information);
                 break;
             case "up", "top":
-                cube.setFaceTexture(Cube.Face.up , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.up , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "down", "bottom":
-                cube.setFaceTexture(Cube.Face.down , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.down , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "north":
-                cube.setFaceTexture(Cube.Face.north , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.north , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "south":
-                cube.setFaceTexture(Cube.Face.south , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.south , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "east", "right":
-                cube.setFaceTexture(Cube.Face.east , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.east , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "west", "left":
-                cube.setFaceTexture(Cube.Face.west , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.west , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "all":
-                cube.setFaceTexture(Cube.Face.all , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.all , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "side":
-                cube.setFaceTexture(Cube.Face.west , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
-                cube.setFaceTexture(Cube.Face.east , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.west , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.east , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
             case "end":
-                cube.setFaceTexture(Cube.Face.north , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
-                cube.setFaceTexture(Cube.Face.south , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.north , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
+                cubeOld.setFaceTexture(Cube_old.Face.south , new tsFile(packPath + "\\minecraft\\textures\\" + information + ".png"));
                 break;
         }
     }
     
-    public Cube Read(String path) throws IOException {
-        
+    public List<Cube_old> getCubesFrom(String path) throws IOException {
         FileInputStream fin = new FileInputStream(path);
         InputStreamReader reader = new InputStreamReader(fin);
-        Cube cube = handleJsonObject(new JsonReader(reader));
+        handleJsonObject(new JsonReader(reader));
         reader.close();
         fin.close();
-        try {
-            cube.setFrom(position[0], position[1], position[2]);
-            cube.setTo(position[3], position[4], position[5]);
-        } catch (IndexOutOfBoundsException ignore){}
-        return cube;
+        return cubeOlds;
     }
     
-    private Cube handleJsonObject(JsonReader reader) throws IOException {
+    private void handleJsonObject(JsonReader reader) throws IOException {
         reader.beginObject();
         int a = 0;
         while (reader.hasNext()) {
@@ -98,7 +105,7 @@ public class ModelReader {
             } else if (token.equals(JsonToken.STRING)) {
                 String information = reader.nextString();
                 if (lastName != null) {
-                    eqaqlsName(lastName, information);
+                    switchName(lastName, information);
                 }
             } else if (token.equals(JsonToken.BEGIN_OBJECT)) {
                 handleJsonObject(reader);
@@ -107,7 +114,6 @@ public class ModelReader {
                 //break
             }
         }
-        return cube;
     }
     
     private void handleJsonArray(JsonReader reader) throws IOException {
@@ -144,7 +150,6 @@ public class ModelReader {
         }
         
     }
-    // https://www.yiibai.com/gson/gson_streaming.html
     String faceName;
     Double[] tempUV = new Double[4];
     Map<String, Double[]> uvMap = new HashMap<>();

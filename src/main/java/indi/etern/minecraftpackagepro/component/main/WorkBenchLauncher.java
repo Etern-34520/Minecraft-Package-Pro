@@ -78,12 +78,12 @@ public class WorkBenchLauncher extends Application {
         decompilerGui.getItems().remove(1);
         
         if (setting.getString("templatePackPath") == null|!new File(setting.getString("templatePackPath")).exists()) {
-            setting.put("templatePackPath", "D:\\Minecraft\\resourcePacks\\");
+            setting.put("templatePackPath", "F:\\Minecraft\\resourcePacks\\");
         }
         FileTree fileTree = new FileTree("1.8.9");
         TreeItem<tsFile> root = new TreeItem<>();
         fileTree.setRootOfAll(root);
-        fileTree.create(new File("D:\\Minecraft\\resourcePacks\\!     §b NotroFault §f[16x]"), root);
+        fileTree.create(new File("F:\\Minecraft\\resourcePacks\\!     §b NotroFault §f[16x]"), root);
         TreeView<tsFile> treeView = new TreeView<>();
         treeView.setRoot(root);
         treeView.setShowRoot(false);
@@ -96,7 +96,7 @@ public class WorkBenchLauncher extends Application {
         TabPane tabPane = new TabPane();
         fileTree.setTreeViewAndTabPane(treeView,tabPane);
         
-        new Thread(() -> this.indexScanner = new IndexScanner(new File("D:\\Minecraft\\resourcePacks\\minecraftDefaultPack_1.8.9"))).start();
+        new Thread(() -> this.indexScanner = new IndexScanner(new File("F:\\Minecraft\\resourcePacks\\minecraftDefaultPack_1.8.9"))).start();
         
         TaskManager taskManager = new TaskManager();
         
