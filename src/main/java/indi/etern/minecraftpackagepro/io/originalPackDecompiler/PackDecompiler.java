@@ -53,6 +53,7 @@ public class PackDecompiler {
     private void reachException() {
         reachException = true;
     }
+    private String indexJsonName;
     
     
     public PackDecompiler(File minecraftPath,File minecraftJar, String version, String putPath) {
@@ -62,6 +63,22 @@ public class PackDecompiler {
             this.putPath = putPath;
             this.minecraftJar = minecraftJar;
             JarDirect = true;
+            System.out.println("Path pass:" + "\"" + minecraftPath.getAbsolutePath() + "\"");
+            String[] jsonVersion = version.split("\\.");
+            mainVersion = jsonVersion[0] + "." + jsonVersion[1];
+        } catch (Exception e) {
+            reachException();
+            e.printStackTrace();
+            exceptions.add(e);
+        }
+    }
+    
+    public PackDecompiler(File minecraftPath, String indexJsonName, String version, String putPath) {
+        try {
+            this.minecraftPath = minecraftPath;
+            this.version = version;
+            this.putPath = putPath;
+            this.indexJsonName = indexJsonName;
             System.out.println("Path pass:" + "\"" + minecraftPath.getAbsolutePath() + "\"");
             String[] jsonVersion = version.split("\\.");
             mainVersion = jsonVersion[0] + "." + jsonVersion[1];
@@ -227,10 +244,17 @@ public class PackDecompiler {
         @Override
         public void run() {
             try {
-                fileMap = (HashMap<String, String>) new ResourceIndex(
-                        new File(minecraftPath.getAbsolutePath() + "\\assets")
-                        , mainVersion
-                ).getResourceMap();//Use Minecraft's code from Mojang to prevent bugs :(
+                if (indexJsonName != null){ // to fit minecraft 1.20 (1.20 has changed index.json to 5.json)
+                    fileMap = (HashMap<String, String>) new ResourceIndex(
+                            new File(minecraftPath.getAbsolutePath() + "\\assets")
+                            , indexJsonName
+                    ).getResourceMap();//Use Minecraft's code from Mojang to prevent bugs :(
+                } else {
+                    fileMap = (HashMap<String, String>) new ResourceIndex(
+                            new File(minecraftPath.getAbsolutePath() + "\\assets")
+                            , mainVersion
+                    ).getResourceMap();//Use Minecraft's code from Mojang to prevent bugs :(
+                }
                 indexLength = fileMap.size();
                 File objects = new File(minecraftPath.getAbsolutePath() + "\\assets\\objects");
 //                progressPane.tip("Hash读取完毕，开始反混淆");

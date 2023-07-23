@@ -4,6 +4,7 @@ import indi.etern.minecraftpackagepro.component.edit.colorPicker.ColorPicker;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
@@ -109,6 +110,7 @@ public class ColorPlate extends GridPane {
         this.setMinSize(0, 0);
         this.setPrefSize(0, 0);
         this.setAlignment(Pos.TOP_CENTER);
+//        GridPane.setMargin(this, new Insets(0, 10, 0, 0));
         widthProperty().addListener(buttonFiller);
         heightProperty().addListener(buttonFiller);
         BackgroundImage backgroundImage = new BackgroundImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("resources/alphabg.png"))), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);

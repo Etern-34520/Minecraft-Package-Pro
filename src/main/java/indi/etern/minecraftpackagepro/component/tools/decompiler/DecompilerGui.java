@@ -264,19 +264,36 @@ public class DecompilerGui extends SplitPane {
                 }
                 new Thread(()->{
                     for (String version : versions) {
-                        PackDecompiler decompiler = new PackDecompiler(
-                                new File(minecraftPath),
-                                version,
-                                putPath + "minecraftDefaultPack_" + version
-                        );
+                        String indexJsonName = null;
+                        PackDecompiler decompiler;
+                        String[] splitVersion = version.split("\\.");
+                        String mainVersion = splitVersion[0] + "." + splitVersion[1];
+                        if (!new File(minecraftPath+"\\assets\\indexes\\"+mainVersion+".json").exists()){
+                            try {
+                                indexJsonName = WebVersionAnalyzer.getIndexJsonVersion(mainVersion);
+                            } catch (Exception ignored){
+                                //can not connect to bangbang93 server
+                                //will use hard code
+                                if (version.startsWith("1.20")) indexJsonName = "5" ;
+                                else if (version.startsWith("1.19.3")) indexJsonName = "3";
+                            }
+                        }
+                        if (indexJsonName != null){
+                            decompiler = new PackDecompiler(
+                                    new File(minecraftPath),
+                                    indexJsonName,
+                                    version,
+                                    putPath + "minecraftDefaultPack_" + version
+                            );
+                        } else {
+                            decompiler = new PackDecompiler(
+                                    new File(minecraftPath),
+                                    version,
+                                    putPath + "minecraftDefaultPack_" + version
+                            );
+                        }
                         decompiler.librariesAble(librariesCheck.isSelected());
                         decompiler.jarAble(jarCheck.isSelected());
-                    /*ProgressPane progressPane = new ProgressPane(decompiler, version);
-                    decompiler.setProgressPane(progressPane);
-                    decompileProgress.getChildren().add(progressPane);
-                    if ((!librariesCheck.isSelected()) && jarCheck.isSelected()) {
-                        progressPane.onlyIndeterminateProgress();
-                    }*/
                         newTask(decompiler);
                     }
                 }).start();
@@ -353,6 +370,7 @@ public class DecompilerGui extends SplitPane {
                         progressStateIsNormal = false;
                         Platform.runLater(() -> {
                             setTip("解压缩中", -1);
+                            setProgress(0);
                             setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
                         });
                     }

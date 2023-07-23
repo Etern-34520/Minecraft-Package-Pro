@@ -19,4 +19,5 @@ module indi.etern.minecraftpackagepro.minecraftpackagepro {
     opens indi.etern.minecraftpackagepro.io.indexScanner to com.google.gson;
     exports indi.etern.minecraftpackagepro.component.main;
     opens indi.etern.minecraftpackagepro.dataBUS.model to com.google.gson;
+    opens indi.etern.minecraftpackagepro.component.main to com.google.gson;
 }

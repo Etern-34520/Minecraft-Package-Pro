@@ -84,67 +84,7 @@ public class Window extends GridPane{
 	@FXML void windowHide(){
 		connectedButton.setSelected(false);
 	}
-
-	/*@FXML void windowMove(MouseEvent event){
-		Insets margin = GridPane.getMargin(this);
-		double x = margin.getLeft();
-		double y = margin.getTop();
-		double newX = x + event.getX() - sx;
-		double newY = y + event.getY() - sy;
-		Region windowBasic=(GridPane) getParent();
-		if (newX + sx < 0) {
-			newX = 0 - sx;
-		} else if (newX + sx > windowBasic.getWidth()) {
-			newX = windowBasic.getWidth() - sx;
-		}
-
-		if (newY + sy < 0) {
-			newY = 0 - sy;
-		} else if (newY + sy > windowBasic.getHeight()) {
-			newY = windowBasic.getHeight() - sy;
-		}
-		//System.out.println(windowBasic.getHeight());
-
-		GridPane.setMargin(this, new Insets(newY, 0, 0, newX));
-		thisTop();
-		backLink.setVisible(true);
-		backLink.setTextFill(Color.rgb(255, 255, 255));
-		//System.out.println("x"+newX+"y"+newY);
-	}
-	@FXML
-	private void thisTop() {
-		for (int i = 0;i<desktop.windows.size();i=i+1) {
-			Window window =desktop.windows.get(i);
-			window.setStyle("-fx-border-color:rgb(50,50,50)");
-			if (window != this) {
-				desktop.windowBasic.getChildren().remove(window);
-				desktop.windowBasic.getChildren().add(window.arrenge+1, window);
-			}
-			arrenge=0;
-		}
-		this.setStyle("-fx-border-color:rgb(0,120,215)");
-	}*/
-	public void pin(){
-		for (Pane pane : panes) {
-			pane.setCursor(Cursor.DEFAULT);
-		}
-	}
-	public void  unPin(){
-		paneNE.setCursor(Cursor.NE_RESIZE);
-		paneN.setCursor(Cursor.N_RESIZE);
-		paneNW.setCursor(Cursor.NW_RESIZE);
-		paneE.setCursor(Cursor.E_RESIZE);
-		paneW.setCursor(Cursor.W_RESIZE);
-		paneSE.setCursor(Cursor.SE_RESIZE);
-		paneS.setCursor(Cursor.S_RESIZE);
-		paneSW.setCursor(Cursor.SW_RESIZE);
-	}
-	/*@FXML
-	void movePrepare(MouseEvent event){
-		sx=event.getX();
-		sy=event.getY();
-		thisTop();
-	}*/
+	
 	@FXML
 	void draggedE(MouseEvent event) {
 

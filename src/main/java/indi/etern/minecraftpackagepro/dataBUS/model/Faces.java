@@ -9,4 +9,5 @@ public class Faces {
     public Face east;
     public Face all;
     public Face side;
+    
 }

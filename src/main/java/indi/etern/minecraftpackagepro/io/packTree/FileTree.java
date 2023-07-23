@@ -2,11 +2,13 @@ package indi.etern.minecraftpackagepro.io.packTree;
 
 import indi.etern.minecraftpackagepro.component.bench.EditPane;
 import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
+import indi.etern.minecraftpackagepro.component.view3D.ModelView;
 import indi.etern.minecraftpackagepro.dataBUS.Setting;
 import indi.etern.minecraftpackagepro.dataBUS.model.Model;
 import indi.etern.minecraftpackagepro.io.indexScanner.IndexScanner;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
@@ -32,6 +34,11 @@ public class FileTree {
 
     private TreeItem<tsFile> rootOfAll;
     private String rootPath;
+    
+    public IndexScanner getIndexScanner() {
+        return indexScanner;
+    }
+    
     private IndexScanner indexScanner;
     private final String packVersion;
     public FileTree(String packVersion){
@@ -63,6 +70,13 @@ public class FileTree {
                 List<Model> models = indexScanner.getModelsOf(picture);
                 if (models != null) {
                     System.out.println(models);
+                    for (Node node:WorkBenchLauncher.getWorkBench().getComponents()){
+                        if (node instanceof ModelView){
+                            Model model = models.get(0);
+                            ((ModelView) node).setModel(model);//TODO 添加模型选择
+                            break;
+                        }
+                    }
                 }
                 editPane.uploadPicture(picture);
                 if (editPane.toTab() != null) {
@@ -71,14 +85,7 @@ public class FileTree {
                     } else {
                         tabPane.getTabs().add(editPane.toTab());
                         tabPane.selectionModelProperty().get().select(getInTabList(editPane.toTab()));
-                        new Thread(() -> {
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                            editPane.reDrawOriginalSize();
-                        }).start();
+//                        new Thread(editPane::reDrawOriginalSize).start();
                     }
                 }
             }

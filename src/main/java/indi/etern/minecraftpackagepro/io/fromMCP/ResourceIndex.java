@@ -25,7 +25,7 @@ public class ResourceIndex {
     //private static final Logger logger = LogManager.getLogger();
     private final Map<String, String> resourceMap = Maps.newHashMap();//Changed
 
-    public ResourceIndex(File p_i1047_1_, String p_i1047_2_)
+    public ResourceIndex(File p_i1047_1_, String p_i1047_2_) throws Exception
     {
         if (p_i1047_2_ != null)
         {
@@ -60,16 +60,6 @@ public class ResourceIndex {
                         this.resourceMap.put(file3.getName(),s1);//Changed
                     }
                 }
-            }
-            catch (JsonParseException var20)
-            {
-                var20.printStackTrace();
-//                logger.error("Unable to parse resource index file: " + file2);
-            }
-            catch (FileNotFoundException var21)
-            {
-                var21.printStackTrace();
-//                logger.error("Can't find the resource index file: " + file2);
             }
             finally
             {

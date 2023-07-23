@@ -6,12 +6,14 @@ import indi.etern.minecraftpackagepro.component.bench.WorkBench.Way;
 import indi.etern.minecraftpackagepro.component.edit.colorPicker.ColorPicker;
 import indi.etern.minecraftpackagepro.component.edit.colorPlate.ColorPlate;
 import indi.etern.minecraftpackagepro.component.tools.decompiler.DecompilerGui;
+import indi.etern.minecraftpackagepro.component.view3D.ModelView;
 import indi.etern.minecraftpackagepro.dataBUS.Setting;
 import indi.etern.minecraftpackagepro.io.indexScanner.IndexScanner;
 import indi.etern.minecraftpackagepro.io.packTree.FileTree;
 import indi.etern.minecraftpackagepro.io.packTree.FileTree.tsFile;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -26,12 +28,17 @@ import java.util.Optional;
 public class WorkBenchLauncher extends Application {
     
     private static final long STARTTIME = System.currentTimeMillis();
-    private IndexScanner indexScanner;
+    public static FileTree fileTree;
+    private static WorkBench workBench;
+    
+    public static WorkBench getWorkBench() {
+        return workBench;
+    }
     
     @Override
     public void start(Stage stage) throws Exception {
         // 初始化
-        WorkBench workBench = new WorkBench();
+        workBench = new WorkBench();
         workBench.setCache(true);
         Scene scene = new Scene(workBench,600,400);
         stage.setScene(scene);
@@ -80,10 +87,10 @@ public class WorkBenchLauncher extends Application {
         if (setting.getString("templatePackPath") == null|!new File(setting.getString("templatePackPath")).exists()) {
             setting.put("templatePackPath", "F:\\Minecraft\\resourcePacks\\");
         }
-        FileTree fileTree = new FileTree("1.8.9");
+        fileTree = new FileTree("1.8.9");
         TreeItem<tsFile> root = new TreeItem<>();
         fileTree.setRootOfAll(root);
-        fileTree.create(new File("F:\\Minecraft\\resourcePacks\\!     §b NotroFault §f[16x]"), root);
+        fileTree.create(new File("F:\\Minecraft\\resourcePacks\\minecraftDefaultPack_1.8.9"),root);//!     §b NotroFault §f[16x]"), root);
         TreeView<tsFile> treeView = new TreeView<>();
         treeView.setRoot(root);
         treeView.setShowRoot(false);
@@ -96,11 +103,13 @@ public class WorkBenchLauncher extends Application {
         TabPane tabPane = new TabPane();
         fileTree.setTreeViewAndTabPane(treeView,tabPane);
         
-        new Thread(() -> this.indexScanner = new IndexScanner(new File("F:\\Minecraft\\resourcePacks\\minecraftDefaultPack_1.8.9"))).start();
+//        new Thread(() -> this.indexScanner = new IndexScanner(new File("D:\\Minecraft\\resourcePacks\\minecraftDefaultPack_1.8.9"))).start();
         
         TaskManager taskManager = new TaskManager();
-        
         workBench.add(taskManager, Way.RIGHT_BOTTOM, "任务");
+        
+        ModelView modelView = new ModelView();
+        workBench.add(modelView, Way.RIGHT_TOP, "模型预览");
         
         //关闭窗口时的操作
         stage.setOnCloseRequest(event -> {

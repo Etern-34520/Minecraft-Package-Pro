@@ -56,7 +56,8 @@ public abstract class TaskPane extends VBox implements Runnable{
      */
     public void setProgress(double progress) {
         Platform.runLater(()->{
-            progressBar.setProgress(progress/100.0);
+            if (progress == ProgressBar.INDETERMINATE_PROGRESS) progressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+            else progressBar.setProgress(progress/100.0);
         });
     }
     public double getProgress(){return Math.round(progressBar.getProgress()*100);}
