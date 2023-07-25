@@ -3,6 +3,7 @@ package indi.etern.minecraftpackagepro.dataBUS.model;
 import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
 import javafx.scene.Group;
 
+import java.util.List;
 import java.util.Map;
 
 public class Model {
@@ -39,8 +40,8 @@ public class Model {
         } else {
             for (Cube cube : elements) {
                 cube.setBelongModel(this);
-                final Group cubeGroup = cube.toGroup();
-                group.getChildren().add(cubeGroup);
+                final List<Group> cubeGroup = cube.toGroups();
+                group.getChildren().addAll(cubeGroup);
             }
         }
         if (elements == null) {
