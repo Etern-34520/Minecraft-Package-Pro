@@ -1,16 +1,13 @@
 package indi.etern.minecraftpackagepro.dataBUS.model;
 
-import com.google.gson.annotations.Expose;
 import indi.etern.minecraftpackagepro.component.main.WorkBenchLauncher;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.CullFace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +18,7 @@ public class Cube {
     public double[] to;
     public Faces faces = new Faces();
     private transient Model belongModel;
-    private transient Group cube;
+    private transient List<Group> cube;
     
     void setBelongModel(Model belongModel) {
         this.belongModel = belongModel;
@@ -31,8 +28,8 @@ public class Cube {
         return new ArrayList<>(){{add(faces.down);add(faces.up);add(faces.north);add(faces.south);add(faces.west);add(faces.east);}};
     }
     
-    public Group toGroup(){
-        cube = new Group();
+    public List<Group> toGroups(){
+        cube = new ArrayList<>();
         double width = to[0] - from[0];
         double height = to[1] - from[1];
         double depth = to[2] - from[2];
@@ -81,17 +78,17 @@ public class Cube {
         final PhongMaterial material = new PhongMaterial();
         try {
             String blockTextureURI;
+            String blockTextureName = belongModel.textures.get(face.texture.substring(1));
             if (face.texture.startsWith("#")) {
-                String blockTextureName = belongModel.textures.get(face.texture.substring(1));
                 while (blockTextureName.startsWith("#")){
                     blockTextureName = belongModel.textures.get(blockTextureName.substring(1));
                 }
             }
-            blockTextureURI = WorkBenchLauncher.fileTree.getIndexScanner().getBlockTextureURIOfInsideName(face.texture);
+            blockTextureURI = WorkBenchLauncher.fileTree.getIndexScanner().getBlockTextureURIOfInsideName(blockTextureName);
             
             material.setDiffuseMap(zoomRealSize(25,new Image(blockTextureURI)));
             FaceBox.setMaterial(material);
-            cube.getChildren().add(FaceBox);
+            cube.add(new Group(FaceBox));
         } catch (Exception ignored) {}
     }
     private Image zoomRealSize(int zoomN,Image image){
